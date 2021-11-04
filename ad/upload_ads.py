@@ -8,7 +8,9 @@ from ad.adapters.provider import GetItemProvider
 from ad.adapters.repository import DetailRepoCsv
 from ad.core.usecases.create_detail_ad import create_detail
 
-detail_uploader = partial(create_detail, repository=DetailRepoCsv(), provider=GetItemProvider())
+detail_uploader = partial(
+    create_detail, repository=DetailRepoCsv(), provider=GetItemProvider()
+)
 
 if __name__ == '__main__':
     new_ad_ids = create(CreateRepoCsv(), CreateProviderOlx())

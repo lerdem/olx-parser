@@ -14,16 +14,18 @@ class FeedPresenter:
                 link=ad.url,
                 # author="Santiago L. Valdarrama",
                 # guid=Guid("http://www.example.com/articles/1"),
-                pubDate=ad.parse_date)
+                pubDate=ad.parse_date,
+            )
             items.append(item)
 
         feed = Feed(
-            title="Olx Квартиры",
-            link="http://127.0.0.1/rss",
-            description="This is an example of how to use rfeed to generate an RSS 2.0 feed",
-            language="ru-Ru",
+            title='Olx Квартиры',
+            link='http://127.0.0.1/rss',
+            description='This is an example of how to use rfeed to generate an RSS 2.0 feed',
+            language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
-            items=items)
+            items=items,
+        )
         return feed.rss()
 
 
@@ -37,16 +39,18 @@ class FeedDetailedPresenter:
                 description=index(ad.image_urls),
                 # author="Santiago L. Valdarrama",
                 # guid=Guid("http://www.example.com/articles/1"),
-                pubDate=ad.parse_date)
+                pubDate=ad.parse_date,
+            )
             items.append(item)
 
         feed = Feed(
-            title="Olx Квартиры(Детали)",
-            link="http://127.0.0.1/rss",
-            description="This is an example of how to use rfeed to generate an RSS 2.0 feed",
-            language="ru-Ru",
+            title='Olx Квартиры(Детали)',
+            link='http://127.0.0.1/rss',
+            description='This is an example of how to use rfeed to generate an RSS 2.0 feed',
+            language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
-            items=items)
+            items=items,
+        )
         return feed.rss()
 
 

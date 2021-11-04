@@ -17,7 +17,7 @@ _FULL_FILE_NAME = '.full-ads.csv'
 _file_field_map = {
     _BASE_FILE_NAME: BaseAd.__fields__.keys(),
     _DETAIL_FILE_NAME: DetailedAd.__fields__.keys(),
-    _FULL_FILE_NAME: FullAd.__fields__.keys()
+    _FULL_FILE_NAME: FullAd.__fields__.keys(),
 }
 
 
@@ -35,7 +35,6 @@ def _migrate():
 
 
 class CreateRepoCsv(CreateRepo):
-
     def save(self, base_ads: BaseAds) -> None:
         with open(_BASE_FILE_NAME, 'w', newline='') as csvfile:
             fieldnames = BaseAd.__fields__.keys()
@@ -73,7 +72,7 @@ class DetailRepoCsv(DetailRepo):
 
     def get_base_ad_by_id(self, id: str) -> BaseAd:
         try:
-            return [x for x in  self.get_all_base() if x.id == id][0]
+            return [x for x in self.get_all_base() if x.id == id][0]
         except IndexError:
             raise AdapterError(f'Не найдено объявление {id}')
 
