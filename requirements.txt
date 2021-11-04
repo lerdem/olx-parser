@@ -1,0 +1,6 @@
+flask
+pydantic
+lxml
+requests
+rfeed
+pytz
