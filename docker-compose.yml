@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+    container_name: olx-server
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+  proxy:
+    build:
+      context: nginx
+    container_name: olx-nginx
+    restart: always
+    ports:
+      - 12345:80
+    depends_on:
+      - app
