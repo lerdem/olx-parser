@@ -73,3 +73,18 @@ def index(image_urls):
 </body>
 </html>
     '''
+
+
+from jinja2 import Environment, FileSystemLoader
+
+if __name__ == '__main__':
+
+    content = 'This is about page'
+
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader)
+
+    template = env.get_template('description.html')
+
+    output = template.render(preview_url=content)
+    print(output)
