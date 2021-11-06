@@ -29,11 +29,12 @@ class CreateProviderOlx(CreateProvider):
     @staticmethod
     def process_item(item):
         # TODO parse per item
-        title, dirty_price, *_ = item.xpath(
+        title, *_ = item.xpath(
             './/p[contains(@class, "Text")]/text()'
-        )  # ['сдам квартиру в днепре 12 квартал', '3 000 грн.', 'Днепр', '11 октября 2021 г.', '36 м²']
+        )  # ['Сдам 2-х комнатную квартиру на длительный период', 'Днепр', '05 ноября 2021 г.', '45 м²']
         default_link = 'https://www.olx.ua'
         link = default_link + item.xpath('./a/@href')[0]
+        dirty_price = item.xpath('.//p[contains(@class, "Text")]/span/text()')[0]
         return title, dirty_price, link
 
 
