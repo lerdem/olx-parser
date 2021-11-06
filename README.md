@@ -8,10 +8,12 @@
 ```bash
 git clone https://github.com/lerdem/olx-parser
 cd olx-parser/
-docker-compose up -d
+docker-compose up -d --build
+# run for creating empty .csv files
+docker exec -it olx-server python -m ad.adapters.repository
 # run uploader via cron
                                     # full path to ads uploader script
-crontab -e # than add: 0/5 * * * * docker exec -it olx-server python -m ad.upload_ads
+crontab -e # than add: */5 * * * * docker exec -it olx-server python -m ad.upload_ads
 ```
 После выполненых шагов установки, подключите rss ссылку http://<ip где установлен server>:12345/detail-rss в свой rss ридер
 
