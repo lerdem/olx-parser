@@ -11,9 +11,8 @@ cd olx-parser/
 docker-compose up -d --build
 # run for creating empty .csv files
 docker exec -it olx-server python -m ad.adapters.repository
-# run uploader via cron
-                                    # full path to ads uploader script
-crontab -e # than add: */5 * * * * docker exec -it olx-server python -m ad.upload_ads
+# run uploader via cron for every 5 minutes
+(crontab -l; echo "*/5 * * * * docker exec -it olx-server python -m ad.upload_ads > /dev/null 2>&1") | crontab -
 ```
 После выполненых шагов установки, подключите rss ссылку http://<ip где установлен server>:12345/detail-rss в свой rss ридер
 
