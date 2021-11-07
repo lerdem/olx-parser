@@ -5,6 +5,4 @@ ADD requirements.txt /app
 ADD app.py /app
 RUN pip3 install -r requirements.txt
 COPY . /app
-# run migrations
-RUN python -m ad.adapters.repository
 CMD ["gunicorn", "-w 4", "-b", "0.0.0.0:8000", "app:app"]
