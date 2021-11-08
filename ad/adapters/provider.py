@@ -22,7 +22,7 @@ class CreateProviderOlx(CreateProvider):
         ]
 
     def _get_olx_search_html(self) -> str:
-        r = requests.get(self._search_url, verify=False)
+        r = requests.get(self._search_url)
         r.raise_for_status()
         return r.text
 
@@ -65,7 +65,7 @@ class GetItemProvider(DetailProvider):
         return images, ad_id, description, name
 
     def _get_olx_search_html(self, url) -> str:
-        r = requests.get(url, verify=False)
+        r = requests.get(url)
         r.raise_for_status()
         return r.text
 
