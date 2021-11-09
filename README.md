@@ -28,3 +28,4 @@ docker exec -it olx-server python -m ad.adapters.repository
 - [ ] Перенос крона в контейнер с приложением
 - [ ] Замена парсинга на использования АПИ https://github.com/limebrains/pyolx
 - [ ] Добавить скрипт по генерации changelog на базе коммитов
+- [ ] Добавить альтернативу RSS
