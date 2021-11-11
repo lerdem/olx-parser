@@ -8,26 +8,21 @@ from ad.core.errors import AdapterError
 from lxml import etree
 
 
-class CreateProviderOlx(CreateProvider):
-    _search_url = 'https://www.olx.ua/d/nedvizhimost/kvartiry/dolgosrochnaya-arenda-kvartir/dnepr/?currency=UAH&search[private_business]=private&search[order]=created_at%3Adesc&search[filter_float_price%3Ato]=7000&search[filter_float_total_area%3Afrom]=30&search[filter_float_total_area%3Ato]=1000&view=list'
+class _CreateProviderOlx1(CreateProvider):
+    _example_url = 'https://www.olx.ua/d/nedvizhimost/kvartiry/dolgosrochnaya-arenda-kvartir/dnepr/?currency=UAH&search[private_business]=private&search[order]=created_at%3Adesc&search[filter_float_price%3Ato]=7000&search[filter_float_total_area%3Afrom]=30&search[filter_float_total_area%3Ato]=1000&view=list'
 
-    def get_raw(self) -> List[Tuple]:
-        html = self._get_olx_search_html()
+    def get_raw(self, start_url) -> List[Tuple]:
+        html = _get_olx_search_html(start_url)
         # with open('test.html') as f:
         #     html = f.read()
         dom = etree.HTML(html)
         return [
-            self.process_item(item)
+            self._process_item(item)
             for item in dom.xpath('.//div[contains(@data-cy, "l-card")]')
         ]
 
-    def _get_olx_search_html(self) -> str:
-        r = requests.get(self._search_url)
-        r.raise_for_status()
-        return r.text
-
     @staticmethod
-    def process_item(item):
+    def _process_item(item):
         # TODO parse per item
         title, *_ = item.xpath(
             './/p[contains(@class, "Text")]/text()'
@@ -38,9 +33,42 @@ class CreateProviderOlx(CreateProvider):
         return title, dirty_price, link
 
 
+class _CreateProviderOlx2(CreateProvider):
+    _example_url = 'https://www.olx.ua/elektronika/telefony-i-aksesuary/mobilnye-telefony-smartfony/dnepr/q-pixel-4/'
+
+    def get_raw(self, start_url) -> List[Tuple]:
+        html = _get_olx_search_html(start_url)
+        dom = etree.HTML(html)
+        return [
+            self._process_item(item)
+            for item in dom.xpath('.//div[@class="offer-wrapper"]')
+        ]
+
+    @staticmethod
+    def _process_item(item):
+        # TODO parse per item
+        title = item.xpath('.//strong/text()')[0]
+        link = item.xpath('.//a/@href')[0]
+        dirty_price = item.xpath('.//p[@class="price"]/strong/text()')[0]
+        return title, dirty_price, link
+
+
+_SPECIAL = 'special'
+_REGULAR = 'regular'
+
+_mapper = {_SPECIAL: _CreateProviderOlx1, _REGULAR: _CreateProviderOlx2}
+
+
+class CreateProviderOlx(CreateProvider):
+    def get_raw(self, start_url) -> List[Tuple]:
+        _provider_type = _SPECIAL if '/d/' in start_url else _REGULAR
+        provider = _mapper[_provider_type]
+        return provider().get_raw(start_url)
+
+
 class GetItemProvider(DetailProvider):
     def get_raw(self, external_url) -> Tuple[List, str, str, str]:
-        html = self._get_olx_search_html(external_url)
+        html = _get_olx_search_html(external_url)
         # with open('item.html') as f:
         #     html = f.read()
         dom = etree.HTML(html)
@@ -64,10 +92,11 @@ class GetItemProvider(DetailProvider):
         name = card.xpath('.//h2/text()')[0]
         return images, ad_id, description, name
 
-    def _get_olx_search_html(self, url) -> str:
-        r = requests.get(url)
-        r.raise_for_status()
-        return r.text
+
+def _get_olx_search_html(url) -> str:
+    r = requests.get(url)
+    r.raise_for_status()
+    return r.text
 
 
 if __name__ == '__main__':

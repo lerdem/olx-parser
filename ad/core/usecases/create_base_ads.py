@@ -10,7 +10,7 @@ from ad.core.entities import BaseAd
 
 
 def create(repository: CreateRepo, provider: CreateProvider) -> List[str]:
-    raw = provider.get_raw()
+    raw = provider.get_raw('https://www.olx.ua/elektronika/dnepr/q-pixel-4/')
     saved = repository.get_all()
     existed_urls = [ad.url for ad in saved]
     provider_ads = [

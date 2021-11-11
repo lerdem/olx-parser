@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Tuple
+from typing import List, Tuple
 
 
 class CreateProvider(ABC):
     @abstractmethod
-    def get_raw(self) -> List[Dict]:
+    def get_raw(self, start_url) -> List[Tuple]:
         pass
 
 
