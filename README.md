@@ -8,6 +8,7 @@
 ```bash
 git clone https://github.com/lerdem/olx-parser
 cd olx-parser/
+# set url for monitor(serarch) in ad/core/usecases/create_base_ads.py:12
 docker-compose up -d --build
 # run for creating empty .csv files
 docker exec -it olx-server python -m ad.adapters.repository
@@ -19,7 +20,6 @@ docker exec -it olx-server python -m ad.adapters.repository
 - [ ] Вестка шаблона html для rss ридера
 - [ ] Семантическое версионирование
 - [ ] Парсинг номеров телефонов
-- [ ] Конфигурация парсинга всех объявллений(ads), а не только квартир
 - [ ] Причины написания парсера
 - [ ] Конфигурация поиска объявлений (из url/form)
 - [ ] Возможность добавления нескольких запросов на мониторинг
