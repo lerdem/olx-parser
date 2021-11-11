@@ -9,8 +9,11 @@ from ad.core.adapters.repository import CreateRepo
 from ad.core.entities import BaseAd
 
 
+__URL_TO_MONITOR = 'https://www.olx.ua/d/nedvizhimost/kvartiry/dolgosrochnaya-arenda-kvartir/dnepr/?currency=UAH&search[private_business]=private&search[order]=created_at%3Adesc&search[filter_float_price%3Ato]=7000&search[filter_float_total_area%3Afrom]=30&search[filter_float_total_area%3Ato]=1000&view=list'
+
+
 def create(repository: CreateRepo, provider: CreateProvider) -> List[str]:
-    raw = provider.get_raw('https://www.olx.ua/elektronika/dnepr/q-pixel-4/')
+    raw = provider.get_raw(__URL_TO_MONITOR)
     saved = repository.get_all()
     existed_urls = [ad.url for ad in saved]
     provider_ads = [
