@@ -12,16 +12,16 @@ class FeedPresenter:
             item = Item(
                 title=ad.title,
                 link=ad.url,
-                # author="Santiago L. Valdarrama",
+                author='lerdem',
                 # guid=Guid("http://www.example.com/articles/1"),
                 pubDate=ad.parse_date,
             )
             items.append(item)
 
         feed = Feed(
-            title='Olx Квартиры',
+            title='Парсер объявлений olx.ua',
             link='http://127.0.0.1/rss',
-            description='This is an example of how to use rfeed to generate an RSS 2.0 feed',
+            description='Парсер объявлений olx.ua c генерацией rss-feed',
             language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
             items=items,
@@ -37,16 +37,16 @@ class FeedDetailedPresenter:
                 title=ad.title,
                 link=ad.url,
                 description=index(ad.image_urls),
-                # author="Santiago L. Valdarrama",
+                author='lerdem',
                 # guid=Guid("http://www.example.com/articles/1"),
                 pubDate=ad.parse_date,
             )
             items.append(item)
 
         feed = Feed(
-            title='Olx Квартиры(Детали)',
+            title='Парсер объявлений olx.ua(Детали)',
             link='http://127.0.0.1/rss',
-            description='This is an example of how to use rfeed to generate an RSS 2.0 feed',
+            description='Парсер объявлений olx.ua c генерацией rss-feed',
             language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
             items=items,
