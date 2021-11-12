@@ -8,7 +8,7 @@
 ```bash
 git clone https://github.com/lerdem/olx-parser
 cd olx-parser/
-# set url for monitor(serarch) in ad/core/usecases/create_base_ads.py:12
+# set urls for serarch/monitor in configuration.json
 docker-compose up -d --build
 # run for creating empty .csv files
 docker exec -it olx-server python -m ad.adapters.repository
