@@ -26,4 +26,3 @@ docker exec -it olx-server python -m ad.adapters.repository
 - [ ] Возможность добавления нескольких запросов на мониторинг
 - [ ] Добавить скрипт по генерации changelog на базе коммитов
 - [ ] Добавить альтернативу RSS
-- [ ] ad/adapters/presenter.py:23 url из config файла
