@@ -20,7 +20,6 @@ def create(repository: CreateRepo, provider: CreateProvider) -> List[str]:
         BaseAd(
             id=uuid.uuid4().hex,
             title=f'{item[0]} - {item[1]}',
-            publication_date='-empty-',
             parse_date=datetime.now(pytz.utc),
             url=item[2],
         )

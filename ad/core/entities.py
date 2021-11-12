@@ -7,7 +7,6 @@ from pydantic import BaseModel, HttpUrl
 class BaseAd(BaseModel):
     id: str
     title: str
-    publication_date: str
     parse_date: datetime
     url: HttpUrl
 
