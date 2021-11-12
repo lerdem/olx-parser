@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import List
-
 from pydantic import BaseModel, HttpUrl
 
 
 class BaseAd(BaseModel):
     id: str
+    tag: str
     title: str
     parse_date: datetime
     url: HttpUrl

@@ -4,7 +4,13 @@ from itertools import chain
 from pathlib import Path
 from typing import Dict
 
-from ad.core.adapters.repository import CreateRepo, GetRepo, DetailRepo
+from ad.core.adapters.repository import (
+    CreateRepo,
+    GetRepo,
+    DetailRepo,
+    ConfigRepo,
+    Configuration,
+)
 from ad.core.entities import BaseAds, BaseAd, FullAd, DetailedAd, DetailedAds
 from ad.core.errors import AdapterError
 
@@ -109,6 +115,11 @@ class GetRepoCsv(GetRepo):
 class GetDetailedRepoCsv(GetRepo):
     def get_all(self) -> BaseAds:
         return DetailRepoCsv().get_all_detail()
+
+
+class ConfigRepoJson(ConfigRepo):
+    def get_configuration(self) -> Configuration:
+        return Configuration.parse_file('configuration.json').__root__
 
 
 if __name__ == '__main__':
