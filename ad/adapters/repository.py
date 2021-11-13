@@ -10,6 +10,7 @@ from ad.core.adapters.repository import (
     DetailRepo,
     ConfigRepo,
     Configuration,
+    Configurations,
 )
 from ad.core.entities import BaseAds, BaseAd, FullAd, DetailedAd, DetailedAds
 from ad.core.errors import AdapterError
@@ -118,7 +119,7 @@ class GetDetailedRepoCsv(GetRepo):
 
 
 class ConfigRepoJson(ConfigRepo):
-    def get_configuration(self) -> Configuration:
+    def get_configuration(self) -> Configurations:
         return Configuration.parse_file('configuration.json').__root__
 
 
