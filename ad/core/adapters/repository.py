@@ -30,6 +30,10 @@ class GetRepo(ABC):
     def get_all(self) -> BaseAds:
         pass
 
+    @abstractmethod
+    def get_by_tag(self, tag: str) -> BaseAds:
+        pass
+
 
 class _ConfigurationItem(BaseModel):
     search_url: HttpUrl

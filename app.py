@@ -1,21 +1,18 @@
-from flask import Flask, Response
-
-from ad.adapters.presenter import FeedPresenter, FeedDetailedPresenter
-from ad.adapters.repository import GetRepoCsv, GetDetailedRepoCsv
-from ad.core.usecases.get_ads import get
+from flask import Flask, Response, request
+from ad.implementations import get_base, get_detail
 
 app = Flask(__name__)
 
 
 @app.route('/rss')
 def hello_world():
-    data = get(GetRepoCsv(), FeedPresenter())
+    data = get_base(tag=request.args.get('tag'))
     return Response(data, headers={'Content-Type': 'application/rss+xml'})
 
 
 @app.route('/detail-rss')
 def detail_rss():
-    data = get(GetDetailedRepoCsv(), FeedDetailedPresenter())
+    data = get_detail(tag=request.args.get('tag'))
     return Response(data, headers={'Content-Type': 'application/rss+xml'})
 
 

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Union
 from pydantic import BaseModel, HttpUrl
 
 
@@ -34,3 +34,4 @@ class FullAd(Contact, DetailedAd):
 
 BaseAds = List[BaseAd]
 DetailedAds = List[DetailedAd]
+AnyAds = Union[BaseAds, DetailedAds]

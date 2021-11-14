@@ -12,7 +12,7 @@ from ad.core.adapters.repository import (
     Configuration,
     Configurations,
 )
-from ad.core.entities import BaseAds, BaseAd, FullAd, DetailedAd, DetailedAds
+from ad.core.entities import BaseAds, BaseAd, FullAd, DetailedAd, DetailedAds, AnyAds
 from ad.core.errors import AdapterError
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent
@@ -112,10 +112,20 @@ class GetRepoCsv(GetRepo):
     def get_all(self) -> BaseAds:
         return CreateRepoCsv().get_all()
 
+    def get_by_tag(self, tag: str) -> BaseAds:
+        return _filter_by_tag(tag, self.get_all())
+
 
 class GetDetailedRepoCsv(GetRepo):
-    def get_all(self) -> BaseAds:
+    def get_all(self) -> DetailedAds:
         return DetailRepoCsv().get_all_detail()
+
+    def get_by_tag(self, tag: str) -> DetailedAds:
+        return _filter_by_tag(tag, self.get_all())
+
+
+def _filter_by_tag(tag, items: AnyAds) -> AnyAds:
+    return [ad for ad in items if ad.tag == tag]
 
 
 class ConfigRepoJson(ConfigRepo):
