@@ -15,6 +15,7 @@ docker exec -it olx-server python -m ad.adapters.repository
 ```
 После выполненых шагов установки, подключите rss ссылку http://<ip где установлен server>:12345/detail-rss в свой rss ридер
 
+Опционально, генерация фидов по тегам(tag). Для этого нужно добавить в rss сслыку параметр tag, например: http://<ip где установлен server>:12345/detail-rss?tag=any-tag-from-configuration-file
 
 #### Планы
 - [ ] Вестка шаблона html для rss ридера
