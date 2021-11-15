@@ -13,8 +13,6 @@ class _CreateProviderOlx1(CreateProvider):
 
     def get_raw(self, start_url) -> List[Tuple]:
         html = _get_olx_search_html(start_url)
-        # with open('test.html') as f:
-        #     html = f.read()
         dom = etree.HTML(html)
         return [
             self._process_item(item)
