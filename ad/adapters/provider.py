@@ -56,7 +56,7 @@ class _CreateProviderOlx2(CreateProvider):
 _SPECIAL = 'special'
 _REGULAR = 'regular'
 
-_mapper: Dict[str:CreateProvider] = {
+_mapper: Dict[str, CreateProvider] = {
     _SPECIAL: _CreateProviderOlx1,
     _REGULAR: _CreateProviderOlx2,
 }
