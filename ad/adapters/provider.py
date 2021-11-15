@@ -1,10 +1,9 @@
 from typing import List, Tuple
 import requests
+from lxml import etree
 
 from ad.core.adapters.provider import CreateProvider, DetailProvider
 from ad.core.errors import AdapterError
-
-from lxml import etree
 
 
 class _CreateProviderOlx1(CreateProvider):
