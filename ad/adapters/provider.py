@@ -4,7 +4,6 @@ import requests
 from ad.core.adapters.provider import CreateProvider, DetailProvider
 from ad.core.errors import AdapterError
 
-# from .session import OlxRequest
 from lxml import etree
 
 
@@ -73,8 +72,6 @@ class CreateProviderOlx(CreateProvider):
 class GetItemProvider(DetailProvider):
     def get_raw(self, external_url) -> Tuple[List, str, str, str]:
         html = _get_olx_search_html(external_url)
-        # with open('item.html') as f:
-        #     html = f.read()
         dom = etree.HTML(html)
         images = dom.xpath(
             './/div[contains(@data-cy, "adPhotos-swiperSlide")]/div/img/@data-src'
