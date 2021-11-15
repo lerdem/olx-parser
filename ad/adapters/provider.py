@@ -22,7 +22,6 @@ class _CreateProviderOlx1(CreateProvider):
 
     @staticmethod
     def _process_item(item):
-        # TODO parse per item
         title, *_ = item.xpath(
             './/p[contains(@class, "Text")]/text()'
         )  # ['Сдам 2-х комнатную квартиру на длительный период', 'Днепр', '05 ноября 2021 г.', '45 м²']
@@ -48,7 +47,6 @@ class _CreateProviderOlx2(CreateProvider):
 
     @staticmethod
     def _process_item(item):
-        # TODO parse per item
         title = item.xpath('.//strong/text()')[0]
         link = item.xpath('.//a/@href')[0]
         dirty_price = item.xpath('.//p[@class="price"]/strong/text()')[0]
