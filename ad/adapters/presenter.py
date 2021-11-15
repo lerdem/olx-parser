@@ -1,6 +1,6 @@
 import datetime
 
-from rfeed import *
+from rfeed import Feed, Item
 
 from ad.core.entities import BaseAds, DetailedAds
 
