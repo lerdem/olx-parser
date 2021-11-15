@@ -4,6 +4,8 @@ from rfeed import Feed, Item
 
 from ad.core.entities import BaseAds, DetailedAds
 
+_BASE_TEXT = 'rss from olx'
+
 
 class FeedPresenter:
     def present(self, ads: BaseAds):
@@ -18,11 +20,12 @@ class FeedPresenter:
             )
             items.append(item)
 
-        description = f'{ ads[0].tag}: ' if ads else ''
+        description = f'{ ads[0].tag}: {_BASE_TEXT}' if ads else _BASE_TEXT
+        title = ads[0].tag if ads else _BASE_TEXT
         feed = Feed(
-            title='Парсер объявлений olx.ua',
+            title=title,
             link='http://127.0.0.1/rss',
-            description=f'{description}rss from olx',
+            description=description,
             language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
             items=items,
@@ -44,11 +47,12 @@ class FeedDetailedPresenter:
             )
             items.append(item)
 
-        description = f'{ ads[0].tag}: ' if ads else ''
+        description = f'{ ads[0].tag}: {_BASE_TEXT}' if ads else _BASE_TEXT
+        title = ads[0].tag if ads else _BASE_TEXT
         feed = Feed(
-            title='Парсер объявлений olx.ua(Детали)',
+            title=title,
             link='http://127.0.0.1/rss',
-            description=f'{description}rss from olx',
+            description=description,
             language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
             items=items,
