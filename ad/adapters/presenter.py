@@ -18,10 +18,11 @@ class FeedPresenter:
             )
             items.append(item)
 
+        description = f'{ ads[0].tag}: ' if ads else ''
         feed = Feed(
             title='Парсер объявлений olx.ua',
             link='http://127.0.0.1/rss',
-            description='Парсер объявлений olx.ua c генерацией rss-feed',
+            description=f'{description}rss from olx',
             language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
             items=items,
@@ -43,10 +44,11 @@ class FeedDetailedPresenter:
             )
             items.append(item)
 
+        description = f'{ ads[0].tag}: ' if ads else ''
         feed = Feed(
             title='Парсер объявлений olx.ua(Детали)',
             link='http://127.0.0.1/rss',
-            description='Парсер объявлений olx.ua c генерацией rss-feed',
+            description=f'{description}rss from olx',
             language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
             items=items,
