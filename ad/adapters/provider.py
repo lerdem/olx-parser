@@ -14,6 +14,9 @@ class _CreateProviderOlx1(CreateProvider):
     def get_raw(self, start_url) -> List[Tuple]:
         html = _get_olx_search_html(start_url)
         dom = etree.HTML(html)
+        is_empty_search = len(dom.xpath('//div[contains(@class, "emptynew")]')) == 1
+        if is_empty_search:
+            return []
         return [
             self._process_item(item)
             for item in dom.xpath('.//div[contains(@data-cy, "l-card")]')
@@ -37,6 +40,9 @@ class _CreateProviderOlx2(CreateProvider):
     def get_raw(self, start_url) -> List[Tuple]:
         html = _get_olx_search_html(start_url)
         dom = etree.HTML(html)
+        is_empty_search = len(dom.xpath('//div[contains(@class, "emptynew")]')) == 1
+        if is_empty_search:
+            return []
         return [
             self._process_item(item)
             for item in dom.xpath('.//div[@class="offer-wrapper"]')
