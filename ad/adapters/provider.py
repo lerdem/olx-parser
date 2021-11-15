@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Type
 import requests
 from lxml import etree
 
@@ -56,7 +56,7 @@ class _CreateProviderOlx2(CreateProvider):
 _SPECIAL = 'special'
 _REGULAR = 'regular'
 
-_mapper: Dict[str, CreateProvider] = {
+_mapper: Dict[str, Type[CreateProvider]] = {
     _SPECIAL: _CreateProviderOlx1,
     _REGULAR: _CreateProviderOlx2,
 }
