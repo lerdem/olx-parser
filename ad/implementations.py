@@ -23,6 +23,6 @@ ad_detail_uploader = partial(
 ads_creator = partial(
     create,
     repository=CreateRepoCsv(),
-    provider=CreateProviderOlx,
+    provider=CreateProviderOlx(),
     configuration=ConfigRepoJson(),
 )
