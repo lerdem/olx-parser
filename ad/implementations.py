@@ -9,7 +9,7 @@ from ad.adapters.repository import (
     CreateRepoCsv,
     ConfigRepoJson,
 )
-from ad.core.usecases.create_base_ads import create
+from ad.core.usecases.create_base_ads import CreateAdsUseCase
 from ad.core.usecases.create_detail_ad import create_detail
 from ad.core.usecases.get_ads import get
 
@@ -20,8 +20,7 @@ get_detail_ads = partial(
 ad_detail_uploader = partial(
     create_detail, repository=DetailRepoCsv(), provider=GetItemProvider()
 )
-ads_creator = partial(
-    create,
+ads_creator = CreateAdsUseCase(
     repository=CreateRepoCsv(),
     provider=CreateProviderOlx(),
     configuration=ConfigRepoJson(),
