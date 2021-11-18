@@ -1,7 +1,11 @@
 from functools import partial
 import punq
 
-from ad.adapters.presenter import FeedPresenter, FeedDetailedPresenter
+from ad.adapters.presenter import (
+    FeedPresenter,
+    FeedDetailedPresenter,
+    FeedDebugPresenter,
+)
 from ad.adapters.provider import GetItemProvider, CreateProviderOlx
 from ad.adapters.repository import (
     GetRepoCsv,
@@ -9,6 +13,7 @@ from ad.adapters.repository import (
     DetailRepoCsv,
     CreateRepoCsv,
     ConfigRepoJson,
+    GetDebugRepo,
 )
 from ad.core.adapters.provider import CreateProvider
 from ad.core.adapters.repository import CreateRepo, ConfigRepo
@@ -20,6 +25,7 @@ get_base_ads = partial(get, repo=GetRepoCsv(), presenter=FeedPresenter())
 get_detail_ads = partial(
     get, repo=GetDetailedRepoCsv(), presenter=FeedDetailedPresenter()
 )
+get_full_ads_debug = partial(get, repo=GetDebugRepo(), presenter=FeedDebugPresenter())
 ad_detail_uploader = partial(
     create_detail, repository=DetailRepoCsv(), provider=GetItemProvider()
 )

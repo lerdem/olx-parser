@@ -12,7 +12,15 @@ from ad.core.adapters.repository import (
     Configuration,
     Configurations,
 )
-from ad.core.entities import BaseAds, BaseAd, FullAd, DetailedAd, DetailedAds, AnyAds
+from ad.core.entities import (
+    BaseAds,
+    BaseAd,
+    FullAd,
+    DetailedAd,
+    DetailedAds,
+    AnyAds,
+    FullAds,
+)
 from ad.core.errors import AdapterError
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent
@@ -137,6 +145,7 @@ class GetDebugRepo(GetRepo):
     def get_all(self) -> FullAds:
         ad = FullAd(
             id='bc516e2abb5445ae9d03128a7a911f8f',  # dont show in template
+            tag='arenda-dnepr',  # dont show in template
             title='Сдам 2-х комнатную квартиру на длительный период - Днепр',
             publication_date='2021-11-04 12:58:45',  # dont show in template
             parse_date='2021-11-04 12:58:45',
@@ -173,6 +182,9 @@ class GetDebugRepo(GetRepo):
             phone='+380995437751',
         )
         return [ad]
+
+    def get_by_tag(self, tag: str) -> DetailedAds:
+        return _filter_by_tag(tag, self.get_all())
 
 
 if __name__ == '__main__':

@@ -35,3 +35,4 @@ class FullAd(Contact, DetailedAd):
 BaseAds = List[BaseAd]
 DetailedAds = List[DetailedAd]
 AnyAds = Union[BaseAds, DetailedAds]
+FullAds = List[FullAd]
