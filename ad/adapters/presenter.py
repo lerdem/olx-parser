@@ -2,12 +2,13 @@ import datetime
 
 from rfeed import Feed, Item
 
+from ad.core.adapters import Presenter
 from ad.core.entities import BaseAds, DetailedAds
 
 _BASE_TEXT = 'rss from olx'
 
 
-class FeedPresenter:
+class FeedPresenter(Presenter):
     def present(self, ads: BaseAds):
         items = []
         for ad in ads:
@@ -33,7 +34,7 @@ class FeedPresenter:
         return feed.rss()
 
 
-class FeedDetailedPresenter:
+class FeedDetailedPresenter(Presenter):
     def present(self, ads: DetailedAds):
         items = []
         for ad in ads:
