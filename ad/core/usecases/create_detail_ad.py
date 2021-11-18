@@ -1,9 +1,6 @@
-import uuid
-from datetime import datetime
-
 from ad.core.adapters.provider import DetailProvider
 from ad.core.adapters.repository import DetailRepo
-from ad.core.entities import BaseAd, DetailedAd
+from ad.core.entities import DetailedAd
 
 
 def create_detail(ad_id: str, repository: DetailRepo, provider: DetailProvider):
