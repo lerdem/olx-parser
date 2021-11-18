@@ -5,10 +5,10 @@ from pathlib import Path
 from typing import Dict
 
 from ad.core.adapters.repository import (
-    CreateRepo,
+    CreateAdsRepo,
     GetRepo,
-    DetailRepo,
-    ConfigRepo,
+    DetailedAdRepo,
+    CreateAdsConfig,
     Configuration,
     Configurations,
 )
@@ -41,7 +41,7 @@ def _migrate():
         _init_storage(file_name, fields)
 
 
-class CreateRepoCsv(CreateRepo):
+class CreateAdsRepoCsv(CreateAdsRepo):
     def save(self, base_ads: BaseAds) -> None:
         with open(_BASE_FILE_NAME, 'w', newline='') as csvfile:
             fieldnames = BaseAd.__fields__.keys()
@@ -56,7 +56,7 @@ class CreateRepoCsv(CreateRepo):
             return [BaseAd(**row) for row in reader]
 
 
-class DetailRepoCsv(DetailRepo):
+class DetailedAdRepoCsv(DetailedAdRepo):
     def save(self, detailed_ad: DetailedAd) -> None:
         saved = self.get_all_detail()
         exclude_detailed = filter(lambda x: x.id != detailed_ad.id, saved)
@@ -75,7 +75,7 @@ class DetailRepoCsv(DetailRepo):
 
     @staticmethod
     def get_all_base() -> BaseAds:
-        return CreateRepoCsv().get_all()
+        return CreateAdsRepoCsv().get_all()
 
     def get_base_ad_by_id(self, id: str) -> BaseAd:
         try:
@@ -108,17 +108,17 @@ def _deserialize_urls(raw: str):
     return raw.split(',')
 
 
-class GetRepoCsv(GetRepo):
+class GetBaseAdRepoCsv(GetRepo):
     def get_all(self) -> BaseAds:
-        return CreateRepoCsv().get_all()
+        return CreateAdsRepoCsv().get_all()
 
     def get_by_tag(self, tag: str) -> BaseAds:
         return _filter_by_tag(tag, self.get_all())
 
 
-class GetDetailedRepoCsv(GetRepo):
+class DetailedAdGetRepoCsv(GetRepo):
     def get_all(self) -> DetailedAds:
-        return DetailRepoCsv().get_all_detail()
+        return DetailedAdRepoCsv().get_all_detail()
 
     def get_by_tag(self, tag: str) -> DetailedAds:
         return _filter_by_tag(tag, self.get_all())
@@ -128,7 +128,7 @@ def _filter_by_tag(tag, items: AnyAds) -> AnyAds:
     return [ad for ad in items if ad.tag == tag]
 
 
-class ConfigRepoJson(ConfigRepo):
+class CreateAdsConfigJson(CreateAdsConfig):
     def get_configuration(self) -> Configurations:
         return Configuration.parse_file('configuration.json').__root__
 

@@ -6,16 +6,16 @@ from typing import List
 from functools import reduce
 import pytz
 
-from ad.core.adapters.provider import CreateProvider
-from ad.core.adapters.repository import CreateRepo, ConfigRepo
+from ad.core.adapters.provider import CreateAdsProvider
+from ad.core.adapters.repository import CreateAdsRepo, CreateAdsConfig
 from ad.core.entities import BaseAd
 
 
 @dataclass
 class CreateAdsUseCase:
-    _repository: CreateRepo
-    _provider: CreateProvider
-    _configuration: ConfigRepo
+    _repository: CreateAdsRepo
+    _provider: CreateAdsProvider
+    _configuration: CreateAdsConfig
 
     def __call__(self) -> List[str]:
         confs = self._configuration.get_configuration()

@@ -2,11 +2,11 @@ from typing import List, Tuple, Dict, Type
 import requests
 from lxml import etree
 
-from ad.core.adapters.provider import CreateProvider, DetailProvider
+from ad.core.adapters.provider import CreateAdsProvider, DetailedAdProvider
 from ad.core.errors import AdapterError
 
 
-class _CreateProviderOlx1(CreateProvider):
+class _CreateProviderOlx1(CreateAdsProvider):
     _example_url = 'https://www.olx.ua/d/nedvizhimost/kvartiry/dolgosrochnaya-arenda-kvartir/dnepr/?currency=UAH&search[private_business]=private&search[order]=created_at%3Adesc&search[filter_float_price%3Ato]=7000&search[filter_float_total_area%3Afrom]=30&search[filter_float_total_area%3Ato]=1000&view=list'
 
     def get_raw(self, start_url) -> List[Tuple]:
@@ -31,7 +31,7 @@ class _CreateProviderOlx1(CreateProvider):
         return title, dirty_price, link
 
 
-class _CreateProviderOlx2(CreateProvider):
+class _CreateProviderOlx2(CreateAdsProvider):
     _example_url = 'https://www.olx.ua/elektronika/telefony-i-aksesuary/mobilnye-telefony-smartfony/dnepr/q-pixel-4/'
 
     def get_raw(self, start_url) -> List[Tuple]:
@@ -56,20 +56,20 @@ class _CreateProviderOlx2(CreateProvider):
 _SPECIAL = 'special'
 _REGULAR = 'regular'
 
-_mapper: Dict[str, Type[CreateProvider]] = {
+_mapper: Dict[str, Type[CreateAdsProvider]] = {
     _SPECIAL: _CreateProviderOlx1,
     _REGULAR: _CreateProviderOlx2,
 }
 
 
-class CreateProviderOlx(CreateProvider):
+class CreateProviderOlx(CreateAdsProvider):
     def get_raw(self, start_url) -> List[Tuple]:
         _provider_type = _SPECIAL if '/d/' in start_url else _REGULAR
         provider = _mapper[_provider_type]
         return provider().get_raw(start_url)
 
 
-class DetailProviderOlx(DetailProvider):
+class DetailedAdProviderOlx(DetailedAdProvider):
     def get_raw(self, external_url) -> Tuple[List, str, str, str]:
         html = _get_olx_search_html(external_url)
         dom = etree.HTML(html)
@@ -101,4 +101,4 @@ def _get_olx_search_html(url) -> str:
 
 
 if __name__ == '__main__':
-    DetailProviderOlx().get_raw(None)
+    DetailedAdProviderOlx().get_raw(None)

@@ -8,7 +8,7 @@ from ad.core.entities import BaseAds, DetailedAds
 _BASE_TEXT = 'rss from olx'
 
 
-class FeedPresenter(Presenter):
+class BaseAdFeedPresenter(Presenter):
     def present(self, ads: BaseAds):
         items = []
         for ad in ads:
@@ -34,7 +34,7 @@ class FeedPresenter(Presenter):
         return feed.rss()
 
 
-class FeedDetailedPresenter(Presenter):
+class DetailedAdFeedPresenter(Presenter):
     def present(self, ads: DetailedAds):
         items = []
         for ad in ads:
