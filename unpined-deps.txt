@@ -5,4 +5,4 @@ requests
 rfeed
 pytz
 uwsgi
-injector
+punq
