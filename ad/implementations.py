@@ -2,7 +2,7 @@ from functools import partial
 import punq
 
 from ad.adapters.presenter import FeedPresenter, FeedDetailedPresenter
-from ad.adapters.provider import GetItemProvider, CreateProviderOlx
+from ad.adapters.provider import DetailProviderOlx, CreateProviderOlx
 from ad.adapters.repository import (
     GetRepoCsv,
     GetDetailedRepoCsv,
@@ -31,6 +31,6 @@ ads_creator = container.resolve(CreateAdsUseCase)
 
 
 container.register(DetailRepo, DetailRepoCsv)
-container.register(DetailProvider, GetItemProvider)
+container.register(DetailProvider, DetailProviderOlx)
 container.register(CreateDetailUseCase)
 ad_detail_uploader = container.resolve(CreateDetailUseCase)

@@ -69,7 +69,7 @@ class CreateProviderOlx(CreateProvider):
         return provider().get_raw(start_url)
 
 
-class GetItemProvider(DetailProvider):
+class DetailProviderOlx(DetailProvider):
     def get_raw(self, external_url) -> Tuple[List, str, str, str]:
         html = _get_olx_search_html(external_url)
         dom = etree.HTML(html)
@@ -101,4 +101,4 @@ def _get_olx_search_html(url) -> str:
 
 
 if __name__ == '__main__':
-    GetItemProvider().get_raw(None)
+    DetailProviderOlx().get_raw(None)
