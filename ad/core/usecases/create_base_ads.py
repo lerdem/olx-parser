@@ -1,4 +1,5 @@
 import uuid
+from dataclasses import dataclass
 from datetime import datetime
 from operator import add
 from typing import List
@@ -10,16 +11,11 @@ from ad.core.adapters.repository import CreateRepo, ConfigRepo
 from ad.core.entities import BaseAd
 
 
+@dataclass
 class CreateAdsUseCase:
-    def __init__(
-        self,
-        repository: CreateRepo,
-        provider: CreateProvider,
-        configuration: ConfigRepo,
-    ):
-        self._repository = repository
-        self._provider = provider
-        self._configuration = configuration
+    _repository: CreateRepo
+    _provider: CreateProvider
+    _configuration: ConfigRepo
 
     def __call__(self) -> List[str]:
         confs = self._configuration.get_configuration()
