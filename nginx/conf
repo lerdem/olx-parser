@@ -5,11 +5,4 @@ server {
         proxy_pass http://app:8000;
         include uwsgi_params;
     }
-    location ~*image* {
-        resolver 8.8.8.8 ipv6=off;
-        proxy_pass https://ireland.apollo.olxcdn.com:443$uri$is_args$args;
-        access_log off;
-        expires 90d;
-        proxy_ssl_session_reuse off;
-    }
 }
