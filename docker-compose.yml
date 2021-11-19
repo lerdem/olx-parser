@@ -16,6 +16,6 @@ services:
     container_name: olx-nginx
     restart: always
     ports:
-      - 12345:80
+      - 80:80
     depends_on:
       - app
