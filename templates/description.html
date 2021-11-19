@@ -2,9 +2,227 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{{ ad.title }}</title>
+    <meta name="description" content="{{ ad.description }}" />
 </head>
 <body>
-    <img src="{{ ad.image_urls[0] }}" alt="preview">
+    <header>
+        <h2>{{ ad.title }}</h2>
+        <div class="link-details">
+            <div>
+                <a href="{{ ad.href }}">Открыть страницу</a>
+            </div>
+            <div>{{ ad.parse_date }}</div>
+        </div>
+    </header>
+    <div class="content">{{ ad.description }}</div>
+    <div class="carousel">
+        {% for image_url in ad.image_urls %}
+            <input type="radio" name="slides" id="slide-{{ loop.index  + 1}}">
+        {% endfor %}
+        <div class="carousel__slides">
+            {% for image_url in ad.image_urls %}
+                <div class="carousel__slide">
+                    <figure>
+                        <div>
+                            <img src="{{ image_url }}" alt="">
+                        </div>
+                    </figure>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="carousel__thumbnails">
+            {% for image_url in ad.image_urls %}
+                <div class="carousel__thumbnails-slide">
+                    <label for="slide-{{ loop.index  + 1}}">
+                        <img src="{{ image_url }}" alt="{{ loop.index + 1 }}">
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="contacts">
+        {% if ad.name %}
+        <div class="contacts__name">{{ ad.name }}</div>
+        {% endif %}
+        {% if ad.phone %}
+        <div class="contacts__phone">
+            <a href="tel:{{  ad.phone }}">{{ ad.phone }}</a>
+        </div>
+        {% endif %}
+    </div>
+    <style>
+        header,
+        .contacts {
+            margin: 16px;
+        }
+        header {
+            display: table;
+            margin-right: 0;
+            margin-left: 0;
+            margin-bottom: 16px;
+        }
+        header h2 {
+            margin: 0;
+            padding: 0;
+           display: table-cell;
+        }
+        header .link-details {
+            display: table-cell;
+            width: 150px;
+        }
+
+        .carousel {
+            margin-top: 24px;
+            display: block;
+            position: relative;
+        }
+
+        .carousel > input {
+            clip: rect(1px, 1px, 1px, 1px);
+            clip-path: inset(50%);
+            height: 1px;
+            width: 1px;
+            margin: -1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute;
+        }
+
+        .carousel > input {
+            clip: rect(1px, 1px, 1px, 1px);
+            clip-path: inset(50%);
+            height: 1px;
+            width: 1px;
+            margin: -1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute;
+        }
+
+        {% for image_url in ad.image_urls %}
+            .carousel > input:nth-of-type({{ loop.index + 1 }}):checked ~ .carousel__slides .carousel__slide:first-of-type { margin-left: -{{ loop.index * 100 }}%; }
+            .carousel > input:nth-of-type({{ loop.index + 1 }}):checked ~ .carousel__thumbnails li:nth-of-type({{ loop.index + 1 }}) { box-shadow: 0 0 0 5px rgba(0,0,255,0.5); }
+        {% endfor %}
+
+        .carousel__slides {
+            position: relative;
+            z-index: 1;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            box-sizing: border-box;
+            display: flex;
+        }
+
+        .carousel__slide {
+            position: relative;
+            display: block;
+            flex: 1 0 100%;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            transition: all 300ms ease-out;
+            vertical-align: top;
+            box-sizing: border-box;
+            white-space: normal;
+        }
+
+        .carousel__slide figure {
+            display: flex;
+            margin: 0;
+        }
+
+        .carousel__slide  div {
+            position: relative;
+            width: 100%;
+        }
+        .carousel__slide  div:before {
+            display: block;
+            content: "";
+            width: 100%;
+            padding-top: 66.6666666667%;
+        }
+        .carousel__slide img {
+            display: block;
+            flex: 1 1 auto;
+            object-fit: cover;
+        }
+
+
+        .carousel__thumbnails {
+            list-style: none;
+            margin: 16px 0 0 0;
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+            overflow-x: auto;
+        }
+
+        .carousel__thumbnails .carousel__thumbnails-slide {
+            flex: 0 0 auto;
+            width: 100px;
+            height: 100px;
+        }
+
+        .carousel__thumbnails .carousel__thumbnails-slide:not(:last-child) {
+            margin-right: 12px;
+        }
+
+        .carousel__thumbnails  label {
+                display: block;
+                position: relative;
+            }
+        .carousel__thumbnails label:before {
+            display: block;
+            content: "";
+            width: 100%;
+            padding-top: 100%;
+        }
+        .carousel__slide  div > img,
+        .carousel__thumbnails label > img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .carousel__thumbnails img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel__thumbnails .carousel__slides  {
+            margin-top: 20px;
+        }
+
+        .carousel__thumbnails label:hover,
+        .carousel__thumbnails label:focus {
+            cursor: pointer;
+        }
+
+        .carousel__thumbnails label:hover img,
+        .carousel__thumbnails label:focus img {
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+            transition: all 300ms ease-in-out;
+        }
+
+        .contacts {
+            text-align: right;
+        }
+
+        .contacts__name {
+            font-weight: bold;
+        }
+
+        .contacts__phone {
+            margin-top: 8px;
+        }
+    </style>
 </body>
 </html>
