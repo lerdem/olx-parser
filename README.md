@@ -8,19 +8,29 @@
 ```bash
 git clone https://github.com/lerdem/olx-parser
 cd olx-parser/
+# set urls for serarch/monitor in configuration.json
 docker-compose up -d --build
 # run for creating empty .csv files
 docker exec -it olx-server python -m ad.adapters.repository
-# run uploader via cron for every 5 minutes
-(crontab -l; echo "*/5 * * * * docker exec olx-server python -m ad.upload_ads >> /tmp/cron-upload_ads-logs.txt 2>&1") | crontab -
 ```
 После выполненых шагов установки, подключите rss ссылку http://<ip где установлен server>:12345/detail-rss в свой rss ридер
 
+Опционально, генерация фидов по тегам(tag). Для этого нужно добавить в rss сслыку параметр tag, например: http://<ip где установлен server>:12345/detail-rss?tag=any-tag-from-configuration-file
 
 #### Планы
 - [ ] Вестка шаблона html для rss ридера
 - [ ] Семантическое версионирование
-- [ ] Парсинг номеров телефонов
-- [ ] Конфигурация парсинга всех объявллений(ads), а не только квартир
+- [ ] Добавить скрипт по генерации changelog на базе коммитов
+- [ ] картинки в base64 (вопрос приватности)
+- [ ] Проврка на уникальность поискового запроса
 - [ ] Причины написания парсера
-- [ ] Конфигурация поиска объявлений (из url/form)
+- [ ] Добавить альтернативу RSS
+- [ ] Разное время парсинга для разных урлов
+- [ ] Прокидывать ли тег в имя фида?
+- [ ] Главная страница с:
+    - [ ] Конфигурацией настроек парсера. Объявлений (из url/form)
+    - [ ] Списком возможных фидов
+    - [ ] Списком вариантов деплоя проекта
+- [ ] Трансформация введенной урл в rss?
+- [ ] Парсинг номеров телефонов
+- [ ] Упростить хранение csv(хранить частями со сборкой в конце)

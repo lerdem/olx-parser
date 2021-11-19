@@ -1,8 +1,10 @@
-FROM python:3.9-alpine
+FROM python:3.9-slim
 RUN mkdir /app
 WORKDIR /app
+RUN apt-get update && apt-get install -y gcc && python -m pip install --upgrade pip
+
 ADD requirements.txt /app
-ADD app.py /app
-RUN pip3 install -r requirements.txt
+RUN pip install -r requirements.txt
+RUN apt-get remove -y gcc && apt-get autoremove -y
 COPY . /app
-CMD ["gunicorn", "-w 4", "-b", "0.0.0.0:8000", "app:app"]
+CMD ["uwsgi", "wsgi.ini"]

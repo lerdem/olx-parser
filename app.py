@@ -1,33 +1,36 @@
-from flask import Flask, Response
+from flask import Flask, Response, request
 
-from ad.adapters.presenter import (
-    FeedPresenter,
-    FeedDetailedPresenter,
-    FeedDebugPresenter,
-)
-from ad.adapters.repository import GetRepoCsv, GetDetailedRepoCsv, GetDebugRepo
-from ad.core.usecases.get_ads import get
+from ad.implementations import get_base_ads, get_detail_ads, get_full_ads_debug
 
 app = Flask(__name__)
 
 
 @app.route('/rss')
 def hello_world():
-    data = get(GetRepoCsv(), FeedPresenter())
+    data = get_base_ads(tag=request.args.get('tag'))
     return Response(data, headers={'Content-Type': 'application/rss+xml'})
 
 
 @app.route('/detail-rss')
 def detail_rss():
-    data = get(GetDetailedRepoCsv(), FeedDetailedPresenter())
+    data = get_detail_ads(tag=request.args.get('tag'))
     return Response(data, headers={'Content-Type': 'application/rss+xml'})
 
 
 @app.route('/debug-template')
 def debug_template():
-    data = get(GetDebugRepo(), FeedDebugPresenter())
+    data = get_full_ads_debug(tag=request.args.get('tag'))
     return Response(data, headers={'Content-Type': 'application/rss+xml'})
 
 
+@app.route('/debug-html')
+def debug_html():
+    from ad.adapters.presenter import _get_detail
+    from ad.adapters.repository import GetDebugRepo
+
+    data = _get_detail(GetDebugRepo().get_all()[0])
+    return Response(data, headers={'Content-Type': 'text/html; charset=UTF-8'})
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=False, port=12345)
+    app.run(debug=False)

@@ -1,9 +1,11 @@
 import datetime
 from jinja2 import Environment, FileSystemLoader
 
-from rfeed import *
+from rfeed import Feed, Item
 
 from ad.core.entities import BaseAds, DetailedAds, FullAds, FullAd
+
+_BASE_TEXT = 'rss from olx'
 
 
 class FeedPresenter:
@@ -13,16 +15,18 @@ class FeedPresenter:
             item = Item(
                 title=ad.title,
                 link=ad.url,
-                # author="Santiago L. Valdarrama",
+                author='lerdem',
                 # guid=Guid("http://www.example.com/articles/1"),
                 pubDate=ad.parse_date,
             )
             items.append(item)
 
+        description = f'{ ads[0].tag}: {_BASE_TEXT}' if ads else _BASE_TEXT
+        title = ads[0].tag if ads else _BASE_TEXT
         feed = Feed(
-            title='Olx Квартиры',
+            title=title,
             link='http://127.0.0.1/rss',
-            description='This is an example of how to use rfeed to generate an RSS 2.0 feed',
+            description=description,
             language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
             items=items,
@@ -38,16 +42,18 @@ class FeedDetailedPresenter:
                 title=ad.title,
                 link=ad.url,
                 description=index(ad.image_urls),
-                # author="Santiago L. Valdarrama",
+                author='lerdem',
                 # guid=Guid("http://www.example.com/articles/1"),
                 pubDate=ad.parse_date,
             )
             items.append(item)
 
+        description = f'{ ads[0].tag}: {_BASE_TEXT}' if ads else _BASE_TEXT
+        title = ads[0].tag if ads else _BASE_TEXT
         feed = Feed(
-            title='Olx Квартиры(Детали)',
+            title=title,
             link='http://127.0.0.1/rss',
-            description='This is an example of how to use rfeed to generate an RSS 2.0 feed',
+            description=description,
             language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
             items=items,

@@ -4,8 +4,23 @@ from itertools import chain
 from pathlib import Path
 from typing import Dict
 
-from ad.core.adapters.repository import CreateRepo, GetRepo, DetailRepo
-from ad.core.entities import BaseAds, BaseAd, FullAd, DetailedAd, DetailedAds, FullAds
+from ad.core.adapters.repository import (
+    CreateRepo,
+    GetRepo,
+    DetailRepo,
+    ConfigRepo,
+    Configuration,
+    Configurations,
+)
+from ad.core.entities import (
+    BaseAds,
+    BaseAd,
+    FullAd,
+    DetailedAd,
+    DetailedAds,
+    AnyAds,
+    FullAds,
+)
 from ad.core.errors import AdapterError
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent
@@ -105,16 +120,32 @@ class GetRepoCsv(GetRepo):
     def get_all(self) -> BaseAds:
         return CreateRepoCsv().get_all()
 
+    def get_by_tag(self, tag: str) -> BaseAds:
+        return _filter_by_tag(tag, self.get_all())
+
 
 class GetDetailedRepoCsv(GetRepo):
-    def get_all(self) -> BaseAds:
+    def get_all(self) -> DetailedAds:
         return DetailRepoCsv().get_all_detail()
+
+    def get_by_tag(self, tag: str) -> DetailedAds:
+        return _filter_by_tag(tag, self.get_all())
+
+
+def _filter_by_tag(tag, items: AnyAds) -> AnyAds:
+    return [ad for ad in items if ad.tag == tag]
+
+
+class ConfigRepoJson(ConfigRepo):
+    def get_configuration(self) -> Configurations:
+        return Configuration.parse_file('configuration.json').__root__
 
 
 class GetDebugRepo(GetRepo):
     def get_all(self) -> FullAds:
         ad = FullAd(
             id='bc516e2abb5445ae9d03128a7a911f8f',  # dont show in template
+            tag='arenda-dnepr',  # dont show in template
             title='Сдам 2-х комнатную квартиру на длительный период - Днепр',
             publication_date='2021-11-04 12:58:45',  # dont show in template
             parse_date='2021-11-04 12:58:45',
@@ -151,6 +182,9 @@ class GetDebugRepo(GetRepo):
             phone='+380995437751',
         )
         return [ad]
+
+    def get_by_tag(self, tag: str) -> DetailedAds:
+        return _filter_by_tag(tag, self.get_all())
 
 
 if __name__ == '__main__':
