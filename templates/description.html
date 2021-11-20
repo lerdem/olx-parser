@@ -6,71 +6,136 @@
     <meta name="description" content="{{ ad.description }}" />
 </head>
 <body>
-    <header>
+    <div class="container">
         <h2>{{ ad.title }}</h2>
-        <div class="link-details">
-            <div>
-                <a href="{{ ad.href }}">Открыть страницу</a>
+        <div class="info">
+            <div class="contacts">
+                {% if ad.name %}
+                <div class="contacts__name">{{ ad.name }}</div>
+                {% endif %}
+                {% if ad.phone %}
+                <div class="contacts__phone">
+                    <a href="tel:{{  ad.phone }}">{{ ad.phone }}</a>
+                </div>
+                {% endif %}
             </div>
-            <div>{{ ad.parse_date }}</div>
+            <div class="link-details">
+                <div>
+                    <a href="{{ ad.href }}">Открыть источник</a>
+                </div>
+                <div class="parse-date">{{ ad.parse_date }}</div>
+            </div>
         </div>
-    </header>
-    <div class="content">{{ ad.description }}</div>
-    <div class="carousel">
-        {% for image_url in ad.image_urls %}
-            <input type="radio" name="slides" id="slide-{{ loop.index  + 1}}">
-        {% endfor %}
-        <div class="carousel__slides">
+        <div class="content">{{ ad.description }}</div>
+        <div style="display: none">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="slide-action-icon-left" x="0px" y="0px" viewBox="0 0 490.4 490.4" xml:space="preserve">
+                <g>
+                    <path d="M245.2,490.4c135.2,0,245.2-110,245.2-245.2S380.4,0,245.2,0S0,110,0,245.2C0,380.4,110,490.4,245.2,490.4z M245.2,24.5    c121.7,0,220.7,99,220.7,220.7s-99,220.7-220.7,220.7s-220.7-99-220.7-220.7S123.5,24.5,245.2,24.5z"/>
+                    <path d="M198.9,322.8c2.4,2.4,5.5,3.6,8.7,3.6s6.3-1.2,8.7-3.6c4.8-4.8,4.8-12.5,0-17.3l-48-48h183.4c6.8,0,12.3-5.5,12.3-12.3    s-5.5-12.3-12.3-12.3H168.3l48-48c4.8-4.8,4.8-12.5,0-17.3s-12.5-4.8-17.3,0l-68.9,68.9c-4.8,4.8-4.8,12.5,0,17.3L198.9,322.8z"/>
+                </g>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="slide-action-icon-right" x="0px" y="0px" viewBox="0 0 490.4 490.4" xml:space="preserve">
+                <g>
+                    <path d="M245.2,490.4c135.2,0,245.2-110,245.2-245.2S380.4,0,245.2,0S0,110,0,245.2S110,490.4,245.2,490.4z M245.2,24.5    c121.7,0,220.7,99,220.7,220.7s-99,220.7-220.7,220.7s-220.7-99-220.7-220.7S123.5,24.5,245.2,24.5z"/>
+                    <path d="M138.7,257.5h183.4l-48,48c-4.8,4.8-4.8,12.5,0,17.3c2.4,2.4,5.5,3.6,8.7,3.6s6.3-1.2,8.7-3.6l68.9-68.9    c4.8-4.8,4.8-12.5,0-17.3l-68.9-68.9c-4.8-4.8-12.5-4.8-17.3,0s-4.8,12.5,0,17.3l48,48H138.7c-6.8,0-12.3,5.5-12.3,12.3    C126.4,252.1,131.9,257.5,138.7,257.5z"/>
+                </g>
+            </svg>
+        </div>
+        <div class="carousel">
             {% for image_url in ad.image_urls %}
-                <div class="carousel__slide">
-                    <figure>
-                        <div>
-                            <img src="{{ image_url }}" alt="">
+                <input type="radio" name="slides" id="slide-{{ loop.index}}" {% if loop.first %}checked{% endif %}>
+            {% endfor %}
+            <div class="carousel__slides">
+                {% for image_url in ad.image_urls %}
+                    <div class="carousel__slide">
+                        <figure>
+                            <div class="image-wrap">
+                                <img src="{{ image_url }}" alt="">
+                            </div>
+                        </figure>
+                        <div class="carousel__actions">
+                            <label class="carousel__action" for="slide-{% if not loop.first %}{{ loop.index - 1}}{% else %}{{ loop.length }}{% endif %}">
+                                <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+                                    <use href="#slide-action-icon-left"></use>
+                                </svg>
+                            </label>
+                            <label class="carousel__action" for="slide-{% if not loop.last %}{{ loop.index + 1}}{% else %}1{% endif %}">
+                                <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+                                    <use href="#slide-action-icon-right"></use>
+                                </svg>
+                            </label>
                         </div>
-                    </figure>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="info">
+            <div class="contacts">
+                {% if ad.name %}
+                <div class="contacts__name">{{ ad.name }}</div>
+                {% endif %}
+                {% if ad.phone %}
+                <div class="contacts__phone">
+                    <a href="tel:{{  ad.phone }}">{{ ad.phone }}</a>
                 </div>
-            {% endfor %}
-        </div>
-        <div class="carousel__thumbnails">
-            {% for image_url in ad.image_urls %}
-                <div class="carousel__thumbnails-slide">
-                    <label for="slide-{{ loop.index  + 1}}">
-                        <img src="{{ image_url }}" alt="{{ loop.index + 1 }}">
-                    </label>
+                {% endif %}
+            </div>
+            <div class="link-details">
+                <div>
+                    <a href="{{ ad.href }}">Открыть источник</a>
                 </div>
-            {% endfor %}
+                <div class="parse-date">{{ ad.parse_date }}</div>
+            </div>
         </div>
-    </div>
-    <div class="contacts">
-        {% if ad.name %}
-        <div class="contacts__name">{{ ad.name }}</div>
-        {% endif %}
-        {% if ad.phone %}
-        <div class="contacts__phone">
-            <a href="tel:{{  ad.phone }}">{{ ad.phone }}</a>
-        </div>
-        {% endif %}
     </div>
     <style>
-        header,
-        .contacts {
-            margin: 16px;
+        *::after,
+        *::before {
+            box-sizing: border-box;
         }
-        header {
+        body {
+            background: #ffffff;
+            color: #333333;
+            padding: 0 4px;
+        }
+        .container {
+            max-width: 1280px;
+            margin: auto;
+        }
+
+
+        .info {
             display: table;
-            margin-right: 0;
-            margin-left: 0;
-            margin-bottom: 16px;
+            width: calc(100% - 26px);
+            margin: 16px 0;
+            padding: 16px;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,.16),0 1px 4px 0 rgba(0,0,0,.16);
+            border-radius: 4px;
         }
-        header h2 {
-            margin: 0;
-            padding: 0;
+
+        .contacts,
+        .link-details {
            display: table-cell;
+           width: 50%;
         }
-        header .link-details {
-            display: table-cell;
-            width: 150px;
+
+        .contacts {
+            text-align: left;
         }
+
+        .link-details {
+            text-align: right;
+        }
+
+        .contacts__name {
+            font-weight: bold;
+        }
+
+        .contacts__phone,
+        .parse-date {
+            margin-top: 8px;
+        }
+
 
         .carousel {
             margin-top: 24px;
@@ -89,21 +154,29 @@
             position: absolute;
         }
 
-        .carousel > input {
-            clip: rect(1px, 1px, 1px, 1px);
-            clip-path: inset(50%);
-            height: 1px;
-            width: 1px;
-            margin: -1px;
-            overflow: hidden;
-            padding: 0;
+        {% for image_url in ad.image_urls %}
+            .carousel > input:nth-of-type({{ loop.index }}):checked ~ .carousel__slides .carousel__slide:nth-of-type({{ loop.index }}) { margin-left: -{{ loop.index0 * 100 }}%; }
+            .carousel > input:nth-of-type({{ loop.index }}):checked ~ .carousel__slides .carousel__slide:nth-of-type({{ loop.index }}) .carousel__actions { display: block }
+        {% endfor %}
+
+        .carousel__actions {
+            display: none;
             position: absolute;
+            bottom: 8px;
+            right: 8px;
+            border-radius: 8px;
+            padding: 4px;
+            background: #fff;
         }
 
-        {% for image_url in ad.image_urls %}
-            .carousel > input:nth-of-type({{ loop.index + 1 }}):checked ~ .carousel__slides .carousel__slide:first-of-type { margin-left: -{{ loop.index * 100 }}%; }
-            .carousel > input:nth-of-type({{ loop.index + 1 }}):checked ~ .carousel__thumbnails li:nth-of-type({{ loop.index + 1 }}) { box-shadow: 0 0 0 5px rgba(0,0,255,0.5); }
-        {% endfor %}
+        .carousel__action {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            vertical-align: middle;
+            text-align: center;
+            cursor: pointer;
+        }
 
         .carousel__slides {
             position: relative;
@@ -123,7 +196,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            transition: all 300ms ease-out;
+            transition: margin-left 300ms ease-out;
             vertical-align: top;
             box-sizing: border-box;
             white-space: normal;
@@ -134,11 +207,11 @@
             margin: 0;
         }
 
-        .carousel__slide  div {
+        .carousel__slide  .image-wrap {
             position: relative;
             width: 100%;
         }
-        .carousel__slide  div:before {
+        .carousel__slide  .image-wrap:before {
             display: block;
             content: "";
             width: 100%;
@@ -151,37 +224,7 @@
         }
 
 
-        .carousel__thumbnails {
-            list-style: none;
-            margin: 16px 0 0 0;
-            padding: 0;
-            display: flex;
-            flex-direction: row;
-            overflow-x: auto;
-        }
-
-        .carousel__thumbnails .carousel__thumbnails-slide {
-            flex: 0 0 auto;
-            width: 100px;
-            height: 100px;
-        }
-
-        .carousel__thumbnails .carousel__thumbnails-slide:not(:last-child) {
-            margin-right: 12px;
-        }
-
-        .carousel__thumbnails  label {
-                display: block;
-                position: relative;
-            }
-        .carousel__thumbnails label:before {
-            display: block;
-            content: "";
-            width: 100%;
-            padding-top: 100%;
-        }
-        .carousel__slide  div > img,
-        .carousel__thumbnails label > img {
+        .carousel__slide  .image-wrap > img {
             position: absolute;
             top: 0;
             left: 0;
@@ -189,39 +232,6 @@
             bottom: 0;
             width: 100%;
             height: 100%;
-        }
-        .carousel__thumbnails img {
-            display: block;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .carousel__thumbnails .carousel__slides  {
-            margin-top: 20px;
-        }
-
-        .carousel__thumbnails label:hover,
-        .carousel__thumbnails label:focus {
-            cursor: pointer;
-        }
-
-        .carousel__thumbnails label:hover img,
-        .carousel__thumbnails label:focus img {
-            box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
-            transition: all 300ms ease-in-out;
-        }
-
-        .contacts {
-            text-align: right;
-        }
-
-        .contacts__name {
-            font-weight: bold;
-        }
-
-        .contacts__phone {
-            margin-top: 8px;
         }
     </style>
 </body>
