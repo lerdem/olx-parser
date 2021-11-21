@@ -5,7 +5,7 @@ from pydantic import BaseModel, HttpUrl, root_validator
 from ad.core.entities import BaseAds, DetailedAd, BaseAd
 
 
-class CreateRepo(ABC):
+class CreateAdsRepo(ABC):
     @abstractmethod
     def save(self, base_ads: BaseAds) -> None:
         pass
@@ -15,7 +15,7 @@ class CreateRepo(ABC):
         pass
 
 
-class DetailRepo(ABC):
+class DetailedAdRepo(ABC):
     @abstractmethod
     def save(self, detailed_ad: DetailedAd) -> None:
         pass
@@ -55,7 +55,7 @@ class Configuration(BaseModel):
         return values
 
 
-class ConfigRepo(ABC):
+class CreateAdsConfig(ABC):
     @abstractmethod
     def get_configuration(self) -> Configurations:
         pass

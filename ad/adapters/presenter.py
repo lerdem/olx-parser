@@ -3,12 +3,13 @@ from jinja2 import Environment, FileSystemLoader
 
 from rfeed import Feed, Item
 
+from ad.core.adapters import Presenter
 from ad.core.entities import BaseAds, DetailedAds, FullAds, FullAd
 
 _BASE_TEXT = 'rss from olx'
 
 
-class FeedPresenter:
+class BaseAdFeedPresenter(Presenter):
     def present(self, ads: BaseAds):
         items = []
         for ad in ads:
@@ -34,7 +35,7 @@ class FeedPresenter:
         return feed.rss()
 
 
-class FeedDetailedPresenter:
+class DetailedAdFeedPresenter(Presenter):
     def present(self, ads: DetailedAds):
         items = []
         for ad in ads:

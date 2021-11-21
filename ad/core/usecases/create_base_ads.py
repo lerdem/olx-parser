@@ -1,25 +1,21 @@
 import uuid
+from dataclasses import dataclass
 from datetime import datetime
 from operator import add
 from typing import List
 from functools import reduce
 import pytz
 
-from ad.core.adapters.provider import CreateProvider
-from ad.core.adapters.repository import CreateRepo, ConfigRepo
+from ad.core.adapters.provider import CreateAdsProvider
+from ad.core.adapters.repository import CreateAdsRepo, CreateAdsConfig
 from ad.core.entities import BaseAd
 
 
+@dataclass
 class CreateAdsUseCase:
-    def __init__(
-        self,
-        repository: CreateRepo,
-        provider: CreateProvider,
-        configuration: ConfigRepo,
-    ):
-        self._repository = repository
-        self._provider = provider
-        self._configuration = configuration
+    _repository: CreateAdsRepo
+    _provider: CreateAdsProvider
+    _configuration: CreateAdsConfig
 
     def __call__(self) -> List[str]:
         confs = self._configuration.get_configuration()
