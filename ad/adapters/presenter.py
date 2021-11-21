@@ -39,10 +39,11 @@ class DetailedAdFeedPresenter(Presenter):
     def present(self, ads: DetailedAds):
         items = []
         for ad in ads:
+            ad.phone = None  # pretend as FullAd for _get_detail
             item = Item(
                 title=ad.title,
                 link=ad.url,
-                description=index(ad.image_urls),
+                description=_get_detail(ad),
                 author='lerdem',
                 # guid=Guid("http://www.example.com/articles/1"),
                 pubDate=ad.parse_date,
@@ -62,7 +63,7 @@ class DetailedAdFeedPresenter(Presenter):
         return feed.rss()
 
 
-class FeedDebugPresenter:
+class FeedDebugPresenter(Presenter):
     def present(self, ads: FullAds):
         items = []
         for ad in ads:
@@ -85,27 +86,6 @@ class FeedDebugPresenter:
             items=items,
         )
         return feed.rss()
-
-
-def _make_images(urls):
-    template = '<img src="{url}" alt="preview">'
-    return ' '.join([template.format(url=url) for url in urls])
-
-
-def index(image_urls):
-    str_images = _make_images(image_urls)
-    return f'''
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    {str_images}
-</body>
-</html>
-    '''
 
 
 def _get_detail(ad: FullAd) -> str:
