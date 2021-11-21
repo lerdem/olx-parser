@@ -39,7 +39,6 @@ class DetailedAdFeedPresenter(Presenter):
     def present(self, ads: DetailedAds):
         items = []
         for ad in ads:
-            ad.phone = None  # pretend as FullAd for _get_detail
             item = Item(
                 title=ad.title,
                 link=ad.url,
