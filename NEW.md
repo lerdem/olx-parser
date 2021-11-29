@@ -113,8 +113,8 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 1. backend - состотит из веб приложения и процесса который загружает данные из ОЛХ объявлений
 2. frontend - любое приложение поддерживающие RSS протокол. Т.е. начиная RSS клиентами, заканчивая ботами в мессенжерах
 
-<div id="prerequisites"></div>
 ### Системные заввисимости
+<div id="prerequisites"></div>
 
 Для установки backend необходимо иметь следующее ПО:
 - [git](https://git-scm.com/downloads)
