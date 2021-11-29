@@ -106,8 +106,8 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 
 
 <!-- GETTING STARTED -->
-<div id="about-the-project"></div>
 ## Начало
+<div id="about-the-project"></div>
 
 Верхнеуровнево проект состорит из двух частей:
 1. backend - состотит из веб приложения и процесса который загружает данные из ОЛХ объявлений
@@ -123,8 +123,8 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 
 Работу с frontend рассмотрим на примере RSS клиента [QuiteRSS](https://quiterss.org/en/download)
 
-<div id="installation"></div>
 ### Установка backend
+<div id="installation"></div>
 
 1. Клонирование репозитория
    ```sh
@@ -148,8 +148,8 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 
 
 <!-- USAGE EXAMPLES -->
-<div id="usage"></div>
 ## Usage
+<div id="usage"></div>
 
 Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
 
