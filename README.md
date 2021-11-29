@@ -35,3 +35,4 @@ docker exec -it olx-server python -m ad.adapters.repository
     - [ ] Сделать хранение csv опциональным
     - [ ] Разделять base и detail для экономии трафика
 - [ ] Парсинг номеров телефонов
+- [ ] Поддержка sentry
