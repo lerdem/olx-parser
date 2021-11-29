@@ -65,7 +65,7 @@
       <a href="#getting-started">Начало</a>
       <ul>
         <li><a href="#prerequisites">Системные заввисимости</a></li>
-        <li><a href="#installation">Установка</a></li>
+        <li><a href="#installation">Установка backend</a></li>
       </ul>
     </li>
     <li><a href="#usage">Использование</a></li>
@@ -86,7 +86,7 @@
 
 Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `lerdem`, `olx-parser`, `twitter_handle`, `linkedin_username`, `email`, `email_client`, `project_title`, `project_description`
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">в начало</a>)</p>
 
 
 
@@ -101,52 +101,61 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 * [Bootstrap](https://getbootstrap.com)
 * [JQuery](https://jquery.com)
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">в начало</a>)</p>
 
 
 
 <!-- GETTING STARTED -->
-## Getting Started
+<div id="about-the-project"></div>
+## Начало
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Верхнеуровнево проект состорит из двух частей:
+1. backend - состотит из веб приложения и процесса который загружает данные из ОЛХ объявлений
+2. frontend - любое приложение поддерживающие RSS протокол. Т.е. начиная RSS клиентами, заканчивая ботами в мессенжерах
 
-### Prerequisites
+<div id="prerequisites"></div>
+### Системные заввисимости
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+Для установки backend необходимо иметь следующее ПО:
+- [git](https://git-scm.com/downloads)
+- docker
+- либо на уровне провайдера открыть порт номер 12345 либо с помощью ufw
 
-### Installation
+Работу с frontend рассмотрим на примере RSS клиента [QuiteRSS](https://quiterss.org/en/download)
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+<div id="installation"></div>
+### Установка backend
+
+1. Клонирование репозитория
    ```sh
    git clone https://github.com/lerdem/olx-parser.git
    ```
-3. Install NPM packages
+2. Установка поисковых запросов для мониторинга в файле configuration.json ([пример конфигурации](https://github.com/lerdem/olx-parser/blob/master/configuration.json))
    ```sh
-   npm install
+   cd olx-parser/ && nano configuration.json
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+3. Сборка backend
+    ```sh
+    docker-compose up -d --build
+   ```
+4. Создание *.csv файлов для хранения деталей объявлений
+    ```sh
+   docker exec -it olx-server python -m ad.adapters.repository
    ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">в начало</a>)</p>
 
 
 
 <!-- USAGE EXAMPLES -->
+<div id="usage"></div>
 ## Usage
 
 Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">в начало</a>)</p>
 
 
 
@@ -160,7 +169,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 See the [open issues](https://github.com/lerdem/olx-parser/issues) for a full list of proposed features (and known issues).
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">в начало</a>)</p>
 
 
 
@@ -178,7 +187,7 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">в начало</a>)</p>
 
 
 
@@ -187,7 +196,7 @@ Don't forget to give the project a star! Thanks again!
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">в начало</a>)</p>
 
 
 
@@ -198,7 +207,7 @@ Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_
 
 Project Link: [https://github.com/lerdem/olx-parser](https://github.com/lerdem/olx-parser)
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">в начало</a>)</p>
 
 
 
@@ -207,7 +216,7 @@ Project Link: [https://github.com/lerdem/olx-parser](https://github.com/lerdem/o
 
 * [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">в начало</a>)</p>
 
 
 
