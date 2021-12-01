@@ -21,8 +21,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+[![GPL-3 License][license-shield]][license-url]
 
 
 
@@ -203,7 +202,5 @@ See the [open issues](https://github.com/lerdem/olx-parser/issues) for a full li
 [issues-url]: https://github.com/lerdem/olx-parser/issues
 [license-shield]: https://img.shields.io/github/license/lerdem/olx-parser.svg?style=for-the-badge
 [license-url]: https://github.com/lerdem/olx-parser/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
 [frontend-example]: https://quiterss.org/en/download
 [screenshot-1]: docs/screenshots/screenshot-1.png
