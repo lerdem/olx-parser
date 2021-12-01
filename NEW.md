@@ -29,14 +29,21 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
+<!--
   <a href="https://github.com/lerdem/olx-parser">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
+-->
 
-<h3 align="center">project_title</h3>
+<h3 align="center">Олх парсер с оповещением</h3>
 
   <p align="center">
-    project_description
+    Возможности:
+    <ul>
+        <li>Скачивание данных объявлений с ОЛХ по поисковому запросу</li>
+        <li>Сохранение данных объявлений в csv формате</li>
+        <li>RSS лента для отслеживаия/мониторинга поискового запроса</li>
+    </ul>
     <br />
     <a href="https://github.com/lerdem/olx-parser"><strong>Explore the docs »</strong></a>
     <br />
@@ -76,11 +83,9 @@
 ## О проекте
 <div id="about-the-project"></div>
 
-
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
-
-Here's a blank template to get started: To avoid retyping too much info.
-Do a search and replace with your text editor for the following: `lerdem`, `olx-parser`, `linkedin_username`, `email`, `email_client`, `project_title`, `project_description`
+![Скриншот поиска "аренды жилья" в клиенте QuiteRSS][screenshot-1]
+![Скриншот поиска "аренды жилья" в клиенте Handy News][screenshot-2-1]
+![Скриншот поиска "аренды жилья" в клиенте Handy News][screenshot-2-2]
 
 <p align="right">(<a href="#top">в начало</a>)</p>
 
@@ -202,5 +207,7 @@ See the [open issues](https://github.com/lerdem/olx-parser/issues) for a full li
 [license-url]: https://github.com/lerdem/olx-parser/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: images/screenshot.png
 [frontend-example]: https://quiterss.org/en/download
+[screenshot-1]: docs/screenshots/linux-quiterss/screenshot-1.png
+[screenshot-2-1]: docs/screenshots/android-handy-news/screenshot-1.png
+[screenshot-2-2]: docs/screenshots/android-handy-news/screenshot-2.png
