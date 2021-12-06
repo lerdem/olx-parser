@@ -94,7 +94,8 @@
 
 Верхнеуровнево проект состорит из двух частей:
 1. backend - состотит из веб приложения и процесса который загружает данные из ОЛХ объявлений
-2. frontend - любое приложение поддерживающие RSS протокол. Т.е. начиная [RSS клиентами](https://en.wikipedia.org/wiki/Comparison_of_feed_aggregators), заканчивая ботами в мессенжерах
+2. frontend - любое приложение поддерживающие [RSS протокол](https://ru.wikipedia.org/wiki/RSS).
+Т.е. начиная [RSS клиентами](https://en.wikipedia.org/wiki/Comparison_of_feed_aggregators), заканчивая ботами в мессенжерах ([пример](https://github.com/BoKKeR/RSS-to-Telegram-Bot))
 
 ### Системные заввисимости
 <div id="prerequisites"></div>
