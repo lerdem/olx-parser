@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 
 @app.route('/rss')
-def hello_world():
+def base_rss():
     data = get_base_ads(tag=request.args.get('tag'))
     return Response(data, headers={'Content-Type': 'application/rss+xml'})
 
