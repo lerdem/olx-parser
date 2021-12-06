@@ -44,7 +44,7 @@
         <li>RSS лента для отслеживаия/мониторинга поискового запроса</li>
     </ul>
     <br />
-    <a href="https://github.com/lerdem/olx-parser"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/lerdem/olx-parser"><strong>Документация »</strong></a>
     <br />
     <br />
     <a href="https://github.com/lerdem/olx-parser">View Demo</a>
@@ -101,8 +101,9 @@
 
 Для установки backend необходимо иметь следующее ПО:
 - [git](https://git-scm.com/downloads)
-- docker
-- либо на уровне провайдера открыть порт номер 12345 либо с помощью ufw
+- [docker](https://docs.docker.com/engine/install/)
+- [docker-compose](https://docs.docker.com/compose/install/)
+- либо на уровне провайдера открыть порт номер 12345 либо с помощью [ufw](https://wiki.ubuntu.com/UncomplicatedFirewall)
 
 Работу с frontend рассмотрим на примере RSS клиента [QuiteRSS][frontend-example]
 
@@ -143,7 +144,7 @@
 
 
 <!-- ROADMAP -->
-## Roadmap
+## Планы доработок
 <div id="roadmap"></div>
 
 - [ ] Семантическое версионирование
@@ -171,10 +172,10 @@ See the [open issues](https://github.com/lerdem/olx-parser/issues) for a full li
 
 
 <!-- LICENSE -->
-## License
+## Лицензия
 <div id="license"></div>
 
-Распространяется под лицензиев GPL-3. [Детали](https://github.com/lerdem/olx-parser/blob/master/LICENSE).
+Распространяется под лицензией GPL-3. [Детали](https://github.com/lerdem/olx-parser/blob/master/LICENSE).
 
 <p align="right">(<a href="#top">в начало</a>)</p>
 
