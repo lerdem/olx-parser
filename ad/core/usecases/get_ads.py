@@ -11,4 +11,5 @@ class GetAdsUseCase:
 
     def __call__(self, tag: str):
         ads = self._repo.get_by_tag(tag) if tag is not None else self._repo.get_all()
-        return self._presenter.present(ads)
+        last_30_ads = sorted(ads, key=lambda x: x.parse_date, reverse=True)[:30]
+        return self._presenter.present(last_30_ads)
