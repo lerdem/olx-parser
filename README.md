@@ -165,7 +165,7 @@
     - [ ] Разделять base и detail для экономии трафика
 - [ ] Поиск дубликатов объявлений и мошенников
 - [ ] Парсинг номеров телефонов
-- [ ] Поддержка sentry
+- [ ] Поддержка [sentry](https://docs.sentry.io/platforms/python/)
 - [ ] Валидация тегов и 404
 
 See the [open issues](https://github.com/lerdem/olx-parser/issues) for a full list of proposed features (and known issues).
