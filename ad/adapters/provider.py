@@ -136,8 +136,11 @@ class _DetailedAdRabotaProviderOlx(_BaseAdProviderOlx):
         return []
 
     def get_description(self, dom) -> str:
-        # help https://www.scientecheasy.com/2019/08/xpath-axes.html/
-        return dom.xpath('.//h2//following-sibling::div/p/text()')[0]
+        try:
+            # help https://www.scientecheasy.com/2019/08/xpath-axes.html/
+            return dom.xpath('.//h2//following-sibling::div/p/text()')[0]
+        except IndexError:
+            return 'Не удалось найти описание вакансии'
 
     def get_name(self, dom) -> str:
         # get from ad footer
