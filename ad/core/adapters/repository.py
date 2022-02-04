@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, MutableSequence
 from pydantic import BaseModel, HttpUrl, root_validator
 
 from ad.core.entities import BaseAds, DetailedAd, BaseAd
@@ -49,10 +49,14 @@ class Configuration(BaseModel):
     @root_validator
     def check_tag_unique(cls, values):
         confs = values['__root__']
-        tags = [i.tag for i in confs]
-        if len(tags) != len(set(tags)):
-            raise ValueError('tags should be unique')
+        _is_unique_by([i.tag for i in confs], 'tags list')
+        _is_unique_by([i.search_url for i in confs], 'urls list')
         return values
+
+
+def _is_unique_by(values: MutableSequence, values_name: str):
+    if len(values) != len(set(values)):
+        raise ValueError(f'{values_name} should be unique')
 
 
 class CreateAdsConfig(ABC):
