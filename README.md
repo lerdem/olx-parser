@@ -177,7 +177,7 @@ See the [open issues](https://github.com/lerdem/olx-parser/issues) for a full li
 
 <!-- Reasons why -->
 ## Причины создания проекта
-<div id="#reasons-for-creating-project"></div>
+<div id="reasons-for-creating-project"></div>
 
 Причина написания проекта родилась после осознания состояния рынка недвижимости.
 До развала СССР рынка недвижимости не было, т.к. в СССР жилье было правом и гарантировалось конституцией, получали его не за деньги, а по распределению.
