@@ -60,7 +60,10 @@ class _CreateProviderOlx3(_CreateProviderOlx2):
     def _process_item(item):
         title = item.xpath('.//strong/text()')[0]
         link = item.xpath('.//a/@href')[0]
-        dirty_price = item.xpath('.//span[@class="price-label"]/text()')[0]
+        try:
+            dirty_price = item.xpath('.//span[@class="price-label"]/text()')[0]
+        except IndexError:
+            dirty_price = 'З/п не указана'
         return title, dirty_price, link
 
 
