@@ -98,6 +98,8 @@
 2. frontend - любое приложение поддерживающие [RSS протокол](https://ru.wikipedia.org/wiki/RSS).
 Т.е. начиная [RSS клиентами](https://en.wikipedia.org/wiki/Comparison_of_feed_aggregators), заканчивая ботами в мессенжерах ([пример](https://github.com/BoKKeR/RSS-to-Telegram-Bot))
 
+![Диаграмма архитектуры приложения][architecture-diagram]
+
 ### Системные заввисимости
 <div id="prerequisites"></div>
 
@@ -267,3 +269,4 @@ See the [open issues](https://github.com/lerdem/olx-parser/issues) for a full li
 [license-url]: https://github.com/lerdem/olx-parser/blob/master/LICENSE.txt
 [frontend-example]: https://quiterss.org/en/download
 [screenshot-1]: docs/screenshots/screenshot-1.png
+[architecture-diagram]: docs/diagrams/olx-parser-architecture.png
