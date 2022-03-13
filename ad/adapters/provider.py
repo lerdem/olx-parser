@@ -1,6 +1,6 @@
 import pickle
 from contextlib import contextmanager
-from os.path import join
+from os.path import join, exists
 from pathlib import Path
 from typing import List, Tuple, Dict, Type
 from lxml import etree
@@ -172,7 +172,10 @@ _BASE_DIR = Path(__file__).resolve(strict=True).parent
 @contextmanager
 def get_session() -> Session:
     _path = join(_BASE_DIR, 'session.pickle')
-    s: Session = pickle.load(open(_path, 'rb'))
+    if not exists(_path):
+        s = Session()
+    else:
+        s: Session = pickle.load(open(_path, 'rb'))
     try:
         yield s
     finally:
