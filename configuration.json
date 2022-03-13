@@ -1,6 +1,6 @@
 [
   {
-    "search_url": "https://www.olx.ua/d/nedvizhimost/kvartiry/dolgosrochnaya-arenda-kvartir/dnepr/?currency=UAH&search[private_business]=private&search[order]=created_at%3Adesc&search[filter_float_price%3Ato]=7000&search[filter_float_total_area%3Afrom]=30&search[filter_float_total_area%3Ato]=1000&view=list",
-    "tag": "arenda-dnepr"
+    "search_url": "https://www.olx.ua/nedvizhimost/kvartiry/dolgosrochnaya-arenda-kvartir/lvov/?search%5Bprivate_business%5D=private",
+    "tag": "arenda-lvov"
   }
 ]
