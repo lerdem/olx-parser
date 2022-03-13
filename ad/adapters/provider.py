@@ -1,6 +1,10 @@
+import pickle
+from contextlib import contextmanager
+from os.path import join
+from pathlib import Path
 from typing import List, Tuple, Dict, Type
-import requests
 from lxml import etree
+from requests import Session
 
 from ad.core.adapters.provider import CreateAdsProvider, DetailedAdProvider
 from ad.core.errors import AdapterError
@@ -162,10 +166,24 @@ class DetailedAdProviderOlx(DetailedAdProvider):
         return _provider_klass().get_raw(external_url)
 
 
+_BASE_DIR = Path(__file__).resolve(strict=True).parent
+
+
+@contextmanager
+def get_session() -> Session:
+    _path = join(_BASE_DIR, 'session.pickle')
+    s: Session = pickle.load(open(_path, 'rb'))
+    try:
+        yield s
+    finally:
+        pickle.dump(s, open(_path, 'wb'))
+
+
 def _get_olx_search_html(url) -> str:
-    r = requests.get(url)
-    r.raise_for_status()
-    return r.text
+    with get_session() as session:
+        r = session.get(url)
+        r.raise_for_status()
+        return r.text
 
 
 if __name__ == '__main__':
