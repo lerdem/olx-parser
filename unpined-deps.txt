@@ -4,5 +4,5 @@ lxml~=4.6.4
 requests~=2.26.0
 rfeed~=1.1.1
 pytz
-uWSGI
+gunicorn
 punq

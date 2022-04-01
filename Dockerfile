@@ -1,10 +1,8 @@
-FROM python:3.9-slim
+FROM python:3.9-alpine
 RUN mkdir /app
 WORKDIR /app
-RUN apt-get update && apt-get install -y gcc && python -m pip install --upgrade pip
-
 ADD requirements.txt /app
-RUN pip install -r requirements.txt
-RUN apt-get remove -y gcc && apt-get autoremove -y
+RUN pip3 install -r requirements.txt
 COPY . /app
-CMD ["uwsgi", "wsgi.ini"]
+ENTRYPOINT ["/bin/sh"]
+CMD ["./entrypoint.sh"]
