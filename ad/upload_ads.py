@@ -8,7 +8,7 @@ def _upload_job():
     logger.debug('uploader started')
     while True:
         time_to_wait = randint(45, 120)
-        logger.debug(f'waiting before upload from olx {time_to_wait}')
+        logger.debug(f'waiting before upload from olx {time_to_wait} seconds')
         sleep(time_to_wait)
         new_ad_ids = ads_creator()
         logger.debug(new_ad_ids)
