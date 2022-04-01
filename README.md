@@ -126,10 +126,6 @@
     ```sh
     docker-compose up -d --build
    ```
-4. Создание *.csv файлов для хранения деталей объявлений
-    ```sh
-   docker exec -it olx-server python -m ad.adapters.repository
-   ```
 
 <p align="right">(<a href="#top">в начало</a>)</p>
 
