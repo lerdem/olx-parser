@@ -23,11 +23,11 @@ from ad.core.entities import (
 )
 from ad.core.errors import AdapterError
 
-BASE_DIR = Path(__file__).resolve(strict=True).parent
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 
-_BASE_FILE_NAME = '.base-ads.csv'
-_DETAIL_FILE_NAME = '.detail-ads.csv'
-_FULL_FILE_NAME = '.full-ads.csv'
+_BASE_FILE_NAME = BASE_DIR.joinpath('.base-ads.csv')
+_DETAIL_FILE_NAME = BASE_DIR.joinpath('.detail-ads.csv')
+_FULL_FILE_NAME = BASE_DIR.joinpath('.full-ads.csv')
 
 _file_field_map = {
     _BASE_FILE_NAME: BaseAd.__fields__.keys(),
@@ -37,7 +37,7 @@ _file_field_map = {
 
 
 def _init_storage(file_name, fields):
-    if not os.path.exists(BASE_DIR.joinpath(file_name)):
+    if not os.path.exists(file_name):
         with open(file_name, 'w', newline='') as csvfile:
             fieldnames = fields
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
