@@ -26,12 +26,10 @@ class _CreateProviderOlx1(CreateAdsProvider):
 
     @staticmethod
     def _process_item(item):
-        title, *_ = item.xpath(
-            './/p[contains(@class, "Text")]/text()'
-        )  # ['Сдам 2-х комнатную квартиру на длительный период', 'Днепр', '05 ноября 2021 г.', '45 м²']
+        title = item.xpath('.//h6/text()')[0]
         default_link = 'https://www.olx.ua'
         link = default_link + item.xpath('./a/@href')[0]
-        dirty_price = item.xpath('.//p[contains(@class, "Text")]/span/text()')[0]
+        dirty_price = item.xpath('.//p[@data-testid="ad-price"]/text()')[0] # '6 000 грн.'
         return title, dirty_price, link
 
 
@@ -71,7 +69,7 @@ class _CreateProviderOlx3(_CreateProviderOlx2):
         return title, dirty_price, link
 
 
-_SPECIAL = '/d/'  # apartment ads
+_SPECIAL = '/nedvizhimost/'  # apartment ads
 _REGULAR = 'regular'
 _RABOTA = '/rabota/'
 
@@ -109,17 +107,16 @@ class _BaseAdProviderOlx(DetailedAdProvider):
 
     def get_images(self, dom) -> List:
         # ['https://ireland.apollo.olxcdn.com:443/v1/files/nupcplxvi2jq1-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/7lpzpaq405mp2-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/y37d3uyelph8-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/etd6yxp26bmy2-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/jjhriex63vas-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/lwy4lypf7dkz1-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/7h2ih0zor3i82-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/pb9625qutphn3-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/hln7nl1o80093-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/8sy3w6gcrgpv-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/86jl0gndg0jk3-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/fhmeq8g1oj892-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/z7kc52gy2gfc2-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/da8rehzbvmhm1-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/xp6ld5cj30632-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/xsksiuajfyvs3-UA/image;s=900x1600', 'https://ireland.apollo.olxcdn.com:443/v1/files/4kp8iqzbazqr2-UA/image;s=900x1600']
-        return dom.xpath(
-            './/div[contains(@data-cy, "adPhotos-swiperSlide")]/div/img/@data-src'
-        )
+        return dom.xpath('.//div[contains(@data-cy, "adPhotos-swiperSlide")]//img/@src')
 
     def get_ad_id(self, dom) -> str:  # or raises AdapterError
         # ['https://www.olx.ua/bundles/promote/?bs=adpage_promote&id=725494662']
+        # ['/purchase/promote/variant/?ad-id=805426819&bs=adpage_promote']
         try:
             promote_link = dom.xpath(
                 './/a[contains(@data-testid, "promotion-link")]/@href'
             )[0]
-            ad_id = promote_link.split('id=')[-1]
+            ad_id = promote_link.split('ad-id=')[-1].split('&')[0]
         except IndexError:
             # for rabota ads https://www.olx.ua/obyavlenie/rabota/buhgalter-v-magazin-IDMOigt.html#874994eb0c
             ad_id = dom.xpath(
@@ -135,7 +132,7 @@ class _BaseAdProviderOlx(DetailedAdProvider):
 
     def get_name(self, dom) -> str:
         card = dom.xpath('.//div[contains(@data-cy, "seller_card")]')[0]
-        return card.xpath('.//h2/text()')[0]
+        return card.xpath('.//h4/text()')[0]
 
 
 class _DetailedAdRabotaProviderOlx(_BaseAdProviderOlx):
