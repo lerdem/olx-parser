@@ -67,7 +67,7 @@ class CreateAdsRepoCsv(CreateAdsRepo):
 class DetailedAdRepoCsv(DetailedAdRepo):
     def save(self, detailed_ad: DetailedAd) -> None:
         saved = self.get_all_detail()
-        exclude_detailed = filter(lambda x: x.id != detailed_ad.id, saved)
+        exclude_detailed = filter(lambda x: x.external_id != detailed_ad.external_id, saved)
         with open(_DETAIL_FILE_NAME, 'w', newline='') as csvfile:
             fieldnames = DetailedAd.__fields__.keys()
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
