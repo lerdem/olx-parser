@@ -19,9 +19,22 @@ class _CreateProviderOlx1(CreateAdsProvider):
         is_empty_search = len(dom.xpath('//div[contains(@class, "emptynew")]')) == 1
         if is_empty_search:
             return []
+        # ipdb > rr, *hh = [0, 3]
+        # ipdb > rr, hh
+        # (0, [3])
+        # ipdb > rr, *hh = [0]
+        # ipdb > rr, hh
+        # (0, [])
+        # ipdb > rr, *hh = [0, 3, 4]
+        # ipdb > rr, hh
+        # (0, [3, 4])
+        # поиск по району, *Подивіться результати для більшої відстані
+        search_area, *larger_than_search_area = dom.xpath(
+            './/div[contains(@data-testid, "listing-grid")]'
+        )
         return [
             self._process_item(item)
-            for item in dom.xpath('.//div[contains(@data-cy, "l-card")]')
+            for item in search_area.xpath('.//div[contains(@data-cy, "l-card")]')
         ]
 
     @staticmethod
