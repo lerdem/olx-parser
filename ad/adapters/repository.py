@@ -67,13 +67,22 @@ class CreateAdsRepoCsv(CreateAdsRepo):
 class DetailedAdRepoCsv(DetailedAdRepo):
     def save(self, detailed_ad: DetailedAd) -> None:
         saved = self.get_all_detail()
-        exclude_detailed = filter(lambda x: x.external_id != detailed_ad.external_id, saved)
         with open(_DETAIL_FILE_NAME, 'w', newline='') as csvfile:
             fieldnames = DetailedAd.__fields__.keys()
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            for ad in chain(exclude_detailed, [detailed_ad]):
+            for ad in self._mix_existed_ads_and_one_new(saved, detailed_ad):
                 writer.writerow(_serialize_detail(ad))
+
+    @staticmethod
+    def _mix_existed_ads_and_one_new(
+        existed_ads: DetailedAds, new_or_updated_ad: DetailedAd
+    ):
+        existed_ads_without_new = filter(
+            lambda x: x.external_id != new_or_updated_ad.external_id, existed_ads
+        )
+        for ad in chain(existed_ads_without_new, [new_or_updated_ad]):
+            yield ad
 
     @staticmethod
     def get_all_detail() -> DetailedAds:
