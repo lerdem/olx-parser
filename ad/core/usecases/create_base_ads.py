@@ -19,7 +19,7 @@ class CreateAdsUseCase:
     _configuration: CreateAdsConfig
 
     def __call__(self) -> List[str]:
-        #TODO проблема, если 2 из 10 url падает, то дальше не идет загрузка.
+        # TODO проблема, если 2 из 10 url падает, то дальше не идет загрузка.
         confs = self._configuration.get_configuration()
         return reduce(
             add, [self.__process_one(conf.search_url, conf.tag) for conf in confs], []
@@ -29,7 +29,9 @@ class CreateAdsUseCase:
         try:
             raw = self._provider.get_raw(start_url=url)
         except AdapterError as e:
-            raise UseCaseError(f'Ошибка при получении "raw" данных: {e}.\nFor debug url={url}, tag={tag}')
+            raise UseCaseError(
+                f'Ошибка при получении "raw" данных: {e}.\nFor debug url={url}, tag={tag}'
+            )
         saved = self._repository.get_all()
         existed_urls = [ad.url for ad in saved]
         provider_ads = [
