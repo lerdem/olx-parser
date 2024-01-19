@@ -9,6 +9,7 @@ import pytz
 from ad.core.adapters.provider import CreateAdsProvider
 from ad.core.adapters.repository import CreateAdsRepo, CreateAdsConfig
 from ad.core.entities import BaseAd
+from ad.core.errors import AdapterError, UseCaseError
 
 
 @dataclass
@@ -18,13 +19,17 @@ class CreateAdsUseCase:
     _configuration: CreateAdsConfig
 
     def __call__(self) -> List[str]:
+        #TODO проблема, если 2 из 10 url падает, то дальше не идет загрузка.
         confs = self._configuration.get_configuration()
         return reduce(
             add, [self.__process_one(conf.search_url, conf.tag) for conf in confs], []
         )
 
     def __process_one(self, url: str, tag: str) -> List[str]:
-        raw = self._provider.get_raw(start_url=url)
+        try:
+            raw = self._provider.get_raw(start_url=url)
+        except AdapterError as e:
+            raise UseCaseError(f'Ошибка при получении "raw" данных: {e}.\nFor debug url={url}, tag={tag}')
         saved = self._repository.get_all()
         existed_urls = [ad.url for ad in saved]
         provider_ads = [

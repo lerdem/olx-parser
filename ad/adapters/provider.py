@@ -4,7 +4,7 @@ from os.path import join, exists
 from pathlib import Path
 from typing import List, Tuple, Dict, Type
 from lxml import etree
-from requests import Session
+from requests import Session, HTTPError, ConnectionError
 
 from ad.core.adapters.provider import CreateAdsProvider, DetailedAdProvider
 from ad.core.errors import AdapterError
@@ -192,11 +192,23 @@ def get_session() -> Session:
         pickle.dump(s, open(_path, 'wb'))
 
 
-def _get_olx_search_html(url) -> str:
+def _get_olx_search_html(url)-> str: # or raises AdapterError
     with get_session() as session:
+        return _get_olx_search_html_base(url, session)
+
+
+def _get_olx_search_html_base(url, session: Session) -> str: # or raises AdapterError
+    try:
         r = session.get(url)
+    except ConnectionError as e:
+        raise AdapterError(f'{e}, проблемы с подключение к интернету')
+
+    try:
         r.raise_for_status()
         return r.text
+    except HTTPError as e:
+        raise AdapterError(f'{e}, на этапе запроса к ОЛХ')
+
 
 
 if __name__ == '__main__':

@@ -1,39 +1,27 @@
 import unittest
+from unittest.mock import MagicMock
 
-from ad.adapters.repository import DetailedAdRepoCsv
-from ad.core.entities import DetailedAd
+from requests import Session, HTTPError, ConnectionError
 
-
-_ad = DetailedAd(
-    id='bc516e2abb5445ae9d03128a7a911f8f',  # dont show in template
-    tag='arenda-dnepr',  # dont show in template
-    title='Сдам 2-х комнатную квартиру на длительный период - Днепр',
-    publication_date='2021-11-04 12:58:45',  # dont show in template
-    parse_date='2021-11-04 12:58:45',
-    url='https://www.olx.ua/d/obyavlenie/sdam-2-h-komnatnuyu-kvartiru-na-dlitelnyy-period-IDN7dzO.html',
-    description='Сдам 2-х комнатную квартиру на длительный период для семейной пары в районе '
-    '97 школы'
-    ' (Ул. Братьев Трофимовых 40), 6 этаж 9-и этажного дома, не угловая, теплая, есть лоджия, застеклена.',
-    image_urls=[
-        'https://ireland.apollo.olxcdn.com:443/v1/files/dodwyas1emy32-UA/image;s=4000x3000',
-        'https://ireland.apollo.olxcdn.com/v1/files/pxokmbrmwf9v2-UA/image;s=1104x1472',
-        'https://ireland.apollo.olxcdn.com/v1/files/ve9s1d20cn211-UA/image;s=1104x1472',
-        'https://ireland.apollo.olxcdn.com/v1/files/ralzthng8yp52-UA/image;s=1944x2592',
-        'https://ireland.apollo.olxcdn.com/v1/files/il2y84fnyo5w-UA/image;s=591x1280',
-    ],
-    external_id='725276749',
-    name='Феликс',
-)
-saved = [_ad]
-new_or_updated_ad = DetailedAd(**_ad.dict())
+from ad.adapters.provider import  _get_olx_search_html_base
+from ad.core.errors import AdapterError
 
 
-class TestStringMethods(unittest.TestCase):
-    def test_save(self):
-        repo = DetailedAdRepoCsv()
-        res = list(repo._mix_existed_ads_and_one_new(saved, new_or_updated_ad))
-        self.assertListEqual(res, [new_or_updated_ad])
+class Test(unittest.TestCase):
 
+    def test_error1(self):
+        fake_session_respone = MagicMock(
+            **{'raise_for_status.side_effect': HTTPError('lol', '123'),}, autospec=Session
+        ) # session object
+        session = MagicMock(
+            **{'get.return_value': fake_session_respone,}, autospec=Session
+        ) # session object
+        with self.assertRaises(AdapterError):
+            _get_olx_search_html_base('http://fake.com', session)
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_error2(self):
+        session = MagicMock(
+            **{'get.side_effect': ConnectionError('lol', '123'),}, autospec=Session
+        ) # session object
+        with self.assertRaises(AdapterError):
+            _get_olx_search_html_base('http://fake.com', session)
