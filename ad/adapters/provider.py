@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, Tuple, Dict, Type
 from lxml import etree
 from requests import Session, HTTPError, ConnectionError
+from requests.exceptions import ChunkedEncodingError
 
 from ad.core.adapters.provider import CreateAdsProvider, DetailedAdProvider
 from ad.core.errors import AdapterError
@@ -202,6 +203,8 @@ def _get_olx_search_html_base(url, session: Session) -> str: # or raises Adapter
         r = session.get(url)
     except ConnectionError as e:
         raise AdapterError(f'{e}, проблемы с подключение к интернету')
+    except ChunkedEncodingError as e:
+        raise AdapterError(f'{e}, невозможно прочитать ответ от ОЛХ')
 
     try:
         r.raise_for_status()
