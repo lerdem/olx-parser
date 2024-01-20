@@ -199,8 +199,13 @@ def _get_olx_search_html(url)-> str: # or raises AdapterError
 
 
 def _get_olx_search_html_base(url, session: Session) -> str: # or raises AdapterError
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0',
+        'Referer': url,
+        'X-Client': 'DESKTOP',
+    }
     try:
-        r = session.get(url)
+        r = session.get(url, headers=headers)
     except ConnectionError as e:
         raise AdapterError(f'{e}, проблемы с подключение к интернету')
     except ChunkedEncodingError as e:
