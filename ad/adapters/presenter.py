@@ -1,10 +1,12 @@
 import datetime
+from typing import List
+
 from jinja2 import Environment, FileSystemLoader
 
 from rfeed import Feed, Item
 
 from ad.core.adapters import Presenter
-from ad.core.entities import BaseAds, DetailedAds, FullAds, FullAd
+from ad.core.entities import BaseAds, DetailedAds, FullAds, FullAd, BaseAd
 
 _BASE_TEXT = 'rss from olx'
 
@@ -85,6 +87,16 @@ class FeedDebugPresenter(Presenter):
             items=items,
         )
         return feed.rss()
+
+
+class BaseAdTelegramPresenter(Presenter):
+    def present(self, ads: BaseAds) -> List[str]:
+        return [self._ad_to_html(ad) for ad in ads]
+
+    @staticmethod
+    def _ad_to_html(ad: BaseAd) -> str:
+        # .encode('utf8').decode('utf8') to fix telegram cyrilic rendering issues
+        return f'''<a href='{ad.url}'>{ad.title}</a>'''.encode('utf8').decode('utf8')
 
 
 def _get_detail(ad: FullAd) -> str:

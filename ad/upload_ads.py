@@ -1,9 +1,9 @@
 from time import sleep
-import logging
 from random import randint
 
 from ad.core.errors import UseCaseError
 from ad.implementations import ad_detail_uploader, ads_creator
+from ad.logger import logger
 
 
 def _upload_job():
@@ -26,13 +26,4 @@ def _upload_job():
 
 
 if __name__ == '__main__':
-    logger = logging.getLogger('upload-logger')
-    handler = logging.FileHandler('cron-upload_ads-logs.txt')
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.setLevel(logging.DEBUG)
-
     _upload_job()

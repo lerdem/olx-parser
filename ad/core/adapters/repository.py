@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, MutableSequence
 from pydantic import BaseModel, HttpUrl, root_validator
 
-from ad.core.entities import BaseAds, DetailedAd, BaseAd
+from ad.core.entities import BaseAds, DetailedAd, BaseAd, Views, View
 
 
 class CreateAdsRepo(ABC):
@@ -32,6 +32,22 @@ class GetRepo(ABC):
 
     @abstractmethod
     def get_by_tag(self, tag: str) -> BaseAds:
+        pass
+
+
+class ViewsRepo(ABC):
+    @abstractmethod
+    def get_views_by_ids(self, ad_ids: List[str]) -> Views:
+        pass
+
+    @abstractmethod
+    def save_view(self, view: View) -> None:  # or raises AdapterError
+        pass
+
+
+class Sender(ABC):
+    @abstractmethod
+    def send_message(self, msg: str) -> None:  # or raises AdapterError
         pass
 
 
