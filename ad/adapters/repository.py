@@ -1,8 +1,11 @@
+import configparser
 import csv
 import os
 from itertools import chain
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
+from telegram import Bot
+from telegram.bot import InvalidToken
 
 from ad.core.adapters.repository import (
     CreateAdsRepo,
@@ -11,6 +14,8 @@ from ad.core.adapters.repository import (
     CreateAdsConfig,
     Configuration,
     Configurations,
+    ViewsRepo,
+    Sender,
 )
 from ad.core.entities import (
     BaseAds,
@@ -20,6 +25,8 @@ from ad.core.entities import (
     DetailedAds,
     AnyAds,
     FullAds,
+    Views,
+    View,
 )
 from ad.core.errors import AdapterError
 
@@ -28,11 +35,13 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 _BASE_FILE_NAME = BASE_DIR.joinpath('.base-ads.csv')
 _DETAIL_FILE_NAME = BASE_DIR.joinpath('.detail-ads.csv')
 _FULL_FILE_NAME = BASE_DIR.joinpath('.full-ads.csv')
+_VIEWS_FILE_NAME = BASE_DIR.joinpath('.ad-views.csv')
 
 _file_field_map = {
     _BASE_FILE_NAME: BaseAd.__fields__.keys(),
     _DETAIL_FILE_NAME: DetailedAd.__fields__.keys(),
     _FULL_FILE_NAME: FullAd.__fields__.keys(),
+    _VIEWS_FILE_NAME: View.__fields__.keys(),
 }
 
 
@@ -177,6 +186,69 @@ class GetDebugRepo(GetRepo):
 
     def get_by_tag(self, tag: str) -> DetailedAds:
         return _filter_by_tag(tag, self.get_all())
+
+
+class ViewsRepoCsv(ViewsRepo):
+    def get_views_by_ids(self, ad_ids: List[str]) -> Views:
+        # ad_ids = [0,1,2,3] views = [1,2] return [1,2]
+        with open(_VIEWS_FILE_NAME) as csvfile:
+            reader = csv.DictReader(csvfile)
+            all_ad_views = [View(**row) for row in reader]
+            all_ad_views_d = {view.id: view for view in all_ad_views}
+            viewed_ads_ids = set(ad_ids).intersection(set(all_ad_views_d.keys()))
+            return [
+                view
+                for view_id, view in all_ad_views_d.items()
+                if view_id in viewed_ads_ids
+            ]
+
+    def save_view(self, view: View) -> None:
+        with open(_VIEWS_FILE_NAME, 'a', newline='') as csvfile:
+            fieldnames = View.__fields__.keys()
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writerow(view.dict())
+
+
+class TelegramSender(Sender):
+    def __init__(self):
+        _token = self._get_token()
+        try:
+            self._bot = Bot(token=_token)
+        except InvalidToken:
+            raise AdapterError('Нужен валидный телеграм токен, а не любые символы')
+        self._chat_id = self._get_chat_id()
+
+    def send_message(self, msg: str) -> None:
+        self._bot.send_message(chat_id=self._chat_id, text=msg, parse_mode='HTML')
+
+    @staticmethod
+    def _get_token():
+        config = TelegramSender._get_config()
+
+        try:
+            return config.get('secrets', 'TELEGRAM_BOT_TOKEN')
+        except configparser.NoOptionError:
+            raise AdapterError(
+                '''Нет токена для телеграм бота.
+                В файле environment.ini в [secrets] укажите:
+                TELEGRAM_BOT_TOKEN=Replace-with-your-token'''
+            )
+
+    @staticmethod
+    def _get_config():
+        config_file = BASE_DIR.joinpath('environment.ini')
+        config = configparser.ConfigParser()
+        with open(config_file) as raw_config_file:
+            config.read_file(raw_config_file)
+        return config
+
+    @staticmethod
+    def _get_chat_id() -> int:
+        config = TelegramSender._get_config()
+        try:
+            return config.getint('secrets', 'CHAT_ID')
+        except ValueError:
+            raise AdapterError('телеграм CHAT_ID должен состоять из цифр')
 
 
 if __name__ == '__main__':

@@ -32,7 +32,12 @@ class FullAd(Contact, DetailedAd):
     pass
 
 
+class View(BaseModel):
+    id: str
+
+
 BaseAds = List[BaseAd]
 DetailedAds = List[DetailedAd]
 AnyAds = Union[BaseAds, DetailedAds]
 FullAds = List[FullAd]
+Views = List[View]
