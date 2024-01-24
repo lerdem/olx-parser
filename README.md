@@ -69,7 +69,8 @@
         <li><a href="#installation">Установка backend</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Использование</a></li>
+    <li><a href="#usage-rss">Использование через приложение с RSS</a></li>
+    <li><a href="#usage-telegram">Использование через Телеграм бота</a></li>
     <li><a href="#roadmap">Планы доработок</a></li>
     <li><a href="#reasons-for-creating-project">Причины создания проекта</a></li>
     <li><a href="#license">Лицензия</a></li>
@@ -95,9 +96,10 @@
 
 Верхнеуровнево проект состорит из двух частей:
 1. backend - состотит из веб приложения и процесса который загружает данные из ОЛХ объявлений
-2. frontend - любое приложение поддерживающие [RSS протокол](https://ru.wikipedia.org/wiki/RSS).
-Т.е. начиная [RSS клиентами](https://en.wikipedia.org/wiki/Comparison_of_feed_aggregators), заканчивая ботами в мессенжерах ([пример](https://github.com/BoKKeR/RSS-to-Telegram-Bot))
-
+2. frontend - предполагает 2 вараинта использования:
+    1. любое приложение поддерживающие [RSS протокол](https://ru.wikipedia.org/wiki/RSS).
+    Т.е. начиная [RSS клиентами](https://en.wikipedia.org/wiki/Comparison_of_feed_aggregators), заканчивая ботами в мессенжерах ([пример](https://github.com/BoKKeR/RSS-to-Telegram-Bot))
+    2. отправка данных в телеграм бот.
 ![Диаграмма архитектуры приложения][architecture-diagram]
 
 ### Системные заввисимости
@@ -122,7 +124,11 @@
    ```sh
    cd olx-parser/ && nano configuration.json
    ```
-3. Сборка и запуск backend
+3. Настройка телеграм бота. В файл environment.ini установить актуальные TELEGRAM_BOT_TOKEN и CHAT_ID
+   ```sh
+   nano environment.ini
+   ```
+4. Сборка и запуск backend
     ```sh
     docker-compose up -d --build
    ```
@@ -132,12 +138,21 @@
 
 
 <!-- USAGE EXAMPLES -->
-## Использование
-<div id="usage"></div>
+## Использование через приложение с RSS
+<div id="usage-rss"></div>
 
 Необходимо добавить feed в выбраный вами вариант frontend.
 Для этого на примере QuiteRSS добавьте в feed (через Ctrl+N) ссылку
 вида http://<ip сервера где установлен backend>:12345/detail-rss
+
+<p align="right">(<a href="#top">в начало</a>)</p>
+
+
+## Использование через Телеграм бота
+<div id="usage-telegram"></div>
+
+После введения данных TELEGRAM_BOT_TOKEN CHAT_ID объявления ОЛХ будут
+приходить в бот.
 
 <p align="right">(<a href="#top">в начало</a>)</p>
 
@@ -153,7 +168,7 @@
 - [ ] Добавить скрипт по генерации changelog на базе коммитов
 - [ ] картинки в base64 (вопрос приватности т.к. загрузка идет с серверов олх)
     - [ ] размер картинок
-- [ ] Добавить альтернативу RSS
+- [x] Добавить альтернативу RSS
 - [ ] Разное время парсинга для разных урлов
 - [ ] Главная страница с:
     - [ ] Конфигурацией настроек парсера. Объявлений (из url/form)
