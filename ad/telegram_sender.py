@@ -19,7 +19,7 @@ def _telegram_sender_job():
         logger.debug(f'waiting before send to telegram {time_to_wait} seconds')
         sleep(time_to_wait)
         try:
-            ads_sender(tag=None)
+            _ads_sender(tag=None)
         except UseCaseError as e:
             logger.error(e)
         else:
@@ -33,7 +33,10 @@ if __name__ == '__main__':
     container.register(Sender, TelegramSender)
     container.register(Presenter, BaseAdTelegramPresenter)
     container.register(AdsSenderUseCase)
-    _ads_sender = container.resolve(AdsSenderUseCase)
-    ads_sender = _ads_sender.execute
-
-    _telegram_sender_job()
+    try:
+        _ads_sender = container.resolve(AdsSenderUseCase)
+    except UseCaseError as e:
+        logger.error(e)
+    else:
+        _ads_sender = _ads_sender.execute
+        _telegram_sender_job()
