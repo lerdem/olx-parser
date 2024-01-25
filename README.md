@@ -69,8 +69,8 @@
         <li><a href="#installation">Установка backend</a></li>
       </ul>
     </li>
-    <li><a href="#usage-rss">Использование через приложение с RSS</a></li>
-    <li><a href="#usage-telegram">Использование через Телеграм бота</a></li>
+    <li><a href="#usage-rss">Использование через приложение с RSS (frontend 1)</a></li>
+    <li><a href="#usage-telegram">Использование через Телеграм бота (frontend 2)</a></li>
     <li><a href="#roadmap">Планы доработок</a></li>
     <li><a href="#reasons-for-creating-project">Причины создания проекта</a></li>
     <li><a href="#license">Лицензия</a></li>
@@ -124,11 +124,7 @@
    ```sh
    cd olx-parser/ && nano configuration.json
    ```
-3. Настройка телеграм бота. В файл environment.ini установить актуальные TELEGRAM_BOT_TOKEN и CHAT_ID
-   ```sh
-   nano environment.ini
-   ```
-4. Сборка и запуск backend
+3. Сборка и запуск backend
     ```sh
     docker-compose up -d --build
    ```
@@ -138,7 +134,7 @@
 
 
 <!-- USAGE EXAMPLES -->
-## Использование через приложение с RSS
+## Использование через приложение с RSS (frontend 1)
 <div id="usage-rss"></div>
 
 Необходимо добавить feed в выбраный вами вариант frontend.
@@ -148,11 +144,18 @@
 <p align="right">(<a href="#top">в начало</a>)</p>
 
 
-## Использование через Телеграм бота
+## Использование через Телеграм бота (frontend 2)
 <div id="usage-telegram"></div>
 
-После введения данных TELEGRAM_BOT_TOKEN CHAT_ID объявления ОЛХ будут
-приходить в бот.
+1. Настройка телеграм бота. В файл environment.ini установить актуальные
+TELEGRAM_BOT_TOKEN и CHAT_ID
+   ```sh
+   nano environment.ini
+   ```
+2. Запустить телеграм бот.
+    ```shell script
+    docker exec -it olx-server python -m ad.upload_ads &
+    ```
 
 <p align="right">(<a href="#top">в начало</a>)</p>
 
