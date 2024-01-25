@@ -141,3 +141,6 @@ cython_debug/
 .idea/
 
 *.csv
+
+cron-upload_ads-logs.txt
+*.pickle
