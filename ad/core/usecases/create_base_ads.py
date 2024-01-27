@@ -45,5 +45,5 @@ class CreateAdsUseCase:
             for item in raw
         ]
         new = [ad for ad in provider_ads if ad.url not in existed_urls]
-        self._repository.save(saved + new)
+        self._repository.save(new)
         return [i.id for i in new]
