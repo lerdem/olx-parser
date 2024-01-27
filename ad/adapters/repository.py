@@ -60,10 +60,9 @@ def _migrate():
 
 class CreateAdsRepoCsv(CreateAdsRepo):
     def save(self, base_ads: BaseAds) -> None:
-        with open(_BASE_FILE_NAME, 'w', newline='') as csvfile:
+        with open(_BASE_FILE_NAME, 'a', newline='') as csvfile:
             fieldnames = BaseAd.__fields__.keys()
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
             for ad in base_ads:
                 writer.writerow(ad.dict())
 
