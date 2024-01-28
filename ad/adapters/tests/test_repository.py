@@ -1,8 +1,14 @@
 import unittest
+from hypothesis import given
 
-from ad.adapters.repository import DetailedAdRepoCsv
+
+from ad.adapters.repository import (
+    DetailedAdRepoCsv,
+    _deserialize_detail,
+    _serialize_detail,
+)
 from ad.core.entities import DetailedAd
-
+from ad.core.tests.strategies import DetailedAdSt
 
 _ad = DetailedAd(
     id='bc516e2abb5445ae9d03128a7a911f8f',  # dont show in template
@@ -33,6 +39,11 @@ class TestStringMethods(unittest.TestCase):
         repo = DetailedAdRepoCsv()
         res = list(repo._mix_existed_ads_and_one_new(saved, new_or_updated_ad))
         self.assertListEqual(res, [new_or_updated_ad])
+
+    @given(DetailedAdSt)
+    def test_detail_serialization(self, detailed_ad):
+        new_ad = _deserialize_detail(_serialize_detail(detailed_ad))
+        self.assertEqual(new_ad, detailed_ad)
 
 
 if __name__ == '__main__':

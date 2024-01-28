@@ -1,25 +1,14 @@
-from ad.core.adapters import Presenter
-from ad.core.adapters.repository import GetRepo, ViewsRepo, Sender
-from ad.core.entities import BaseAd
-from ad.core.errors import AdapterError, UseCaseError
-from ad.core.usecases.ads_sender import AdsSenderUseCase
 import unittest
-from parameterized import parameterized
 from unittest.mock import create_autospec
 
+import hypothesis.strategies as st
+from hypothesis import given, example, assume, settings
 
-_ad1 = BaseAd(
-    id='first-id',  # dont show in template
-    tag='arenda-dnepr',  # dont show in template
-    title='Сдам 2-х комнатную квартиру на длительный период - Днепр',
-    parse_date='2021-11-04 12:58:45',
-    url='https://www.olx.ua/d/obyavlenie/sdam-2-h-komnatnuyu-kvartiru-na-dlitelnyy-period-IDN7dzO.html',
-)
-
-_copy1 = _ad1.dict()
-_copy1.pop('id')
-_ad2 = BaseAd(id='second-id', **_copy1)
-_ads = [_ad1, _ad2]
+from ad.core.adapters import Presenter
+from ad.core.adapters.repository import GetRepo, ViewsRepo, Sender
+from ad.core.errors import AdapterError, UseCaseError
+from ad.core.tests.strategies import BaseAdSt
+from ad.core.usecases.ads_sender import AdsSenderUseCase
 
 
 class Test(unittest.TestCase):
@@ -29,32 +18,40 @@ class Test(unittest.TestCase):
         self.sender = create_autospec(Sender)
         self.presenter = create_autospec(Presenter)
 
-    @parameterized.expand(
-        [
-            (_ads, [_ad1], ['msg1'], 1, 1),
-            (_ads, [], [], 1, 0),
-            ([_ad1], [_ad1], [], 1, 0),
-            (_ads, _ads, [], 1, 0),
-        ]
-    )
-    def test_usecase_ok(
-        self, return_repo, return_view, return_message, presenter_count, sender_count
-    ):
+    @given(st.lists(BaseAdSt, unique_by=lambda x: x.id, max_size=10))
+    @example(return_repo=[])
+    def test_usecase_ok(self, return_repo):
+        self._reset_mocks()  # hypothesis dont reset mocks
         self.ads_repo.get_all.return_value = return_repo
-        self.view_repo.get_views_by_ids.return_value = return_view
-        self.presenter.present.return_value = return_message
+        view_repo = return_repo[:3]
+        viewed_ads_count = len(view_repo)
+        self.view_repo.get_views_by_ids.return_value = view_repo
+        self.presenter.present.return_value = ['return_message'] * viewed_ads_count
 
         send_ads = AdsSenderUseCase(
             self.ads_repo, self.view_repo, self.sender, self.presenter
         )
-
         send_ads.execute(None)
-        self.assertEqual(self.presenter.present.call_count, presenter_count)
-        self.assertEqual(self.sender.send_message.call_count, sender_count)
-        self.assertEqual(self.view_repo.save_view.call_count, sender_count)
 
-    def test_usecase_error(self):
-        self.ads_repo.get_all.return_value = _ads
+        self.presenter.present.assert_called_once()
+        self.assertEqual(
+            self.sender.send_message.call_count, self.view_repo.save_view.call_count
+        )
+        self.assertGreaterEqual(viewed_ads_count, self.sender.send_message.call_count)
+
+    def _reset_mocks(self):
+        self.presenter.reset_mock()
+        self.sender.reset_mock()
+        self.view_repo.reset_mock()
+        self.ads_repo.reset_mock()
+
+    @given(BaseAdSt, BaseAdSt)
+    @settings(max_examples=1)
+    def test_usecase_error(self, _ad1, _ad2):
+        assume(_ad1 != _ad2)
+        self._reset_mocks()
+
+        self.ads_repo.get_all.return_value = [_ad1, _ad2]
         self.view_repo.get_views_by_ids.return_value = [_ad1]
         self.presenter.present.return_value = ['msg1']
         self.sender.send_message.side_effect = AdapterError
