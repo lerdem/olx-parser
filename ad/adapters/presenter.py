@@ -3,7 +3,7 @@ from typing import List
 
 from jinja2 import Environment, FileSystemLoader
 
-from rfeed import Feed, Item
+from rfeed import Feed, Item, Guid
 
 from ad.core.adapters import Presenter
 from ad.core.entities import BaseAds, DetailedAds, FullAds, FullAd, BaseAd
@@ -16,10 +16,10 @@ class BaseAdFeedPresenter(Presenter):
         items = []
         for ad in ads:
             item = Item(
+                guid=Guid(ad.id, isPermaLink=False),
                 title=ad.title,
                 link=ad.url,
                 author='lerdem',
-                # guid=Guid("http://www.example.com/articles/1"),
                 pubDate=ad.parse_date,
             )
             items.append(item)
@@ -42,11 +42,11 @@ class DetailedAdFeedPresenter(Presenter):
         items = []
         for ad in ads:
             item = Item(
+                guid=Guid(ad.id, isPermaLink=False),
                 title=ad.title,
                 link=ad.url,
                 description=_get_detail(ad),
                 author='lerdem',
-                # guid=Guid("http://www.example.com/articles/1"),
                 pubDate=ad.parse_date,
             )
             items.append(item)
@@ -69,11 +69,11 @@ class FeedDebugPresenter(Presenter):
         items = []
         for ad in ads:
             item = Item(
+                guid=Guid(ad.id, isPermaLink=False),
                 title=ad.title,
                 link=ad.url,
                 description=_get_detail(ad),
                 # author="Santiago L. Valdarrama",
-                # guid=Guid("http://www.example.com/articles/1"),
                 pubDate=ad.parse_date,
             )
             items.append(item)
