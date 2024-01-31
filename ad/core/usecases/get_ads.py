@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 
 from ad.core.adapters import Presenter
-from ad.core.adapters.repository import GetRepo
+from ad.core.adapters.repository import GetDetailedAdRepo
 
 
 @dataclass
 class GetAdsUseCase:
-    _repo: GetRepo
+    _repo: GetDetailedAdRepo
     _presenter: Presenter
 
     def __call__(self, tag: str):

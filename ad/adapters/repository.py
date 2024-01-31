@@ -9,14 +9,13 @@ from telegram.bot import InvalidToken
 
 from ad.core.adapters.repository import (
     CreateAdsRepo,
-    GetRepo,
     DetailedAdRepo,
     CreateAdsConfig,
     Configuration,
     Configurations,
     ViewsRepo,
     Sender,
-)
+    GetDetailedAdRepo)
 from ad.core.entities import (
     BaseAds,
     BaseAd,
@@ -133,15 +132,7 @@ def _deserialize_urls(raw: str):
     return raw.split(',')
 
 
-class GetBaseAdRepoCsv(GetRepo):
-    def get_all(self) -> BaseAds:
-        return CreateAdsRepoCsv().get_all()
-
-    def get_by_tag(self, tag: str) -> BaseAds:
-        return _filter_by_tag(tag, self.get_all())
-
-
-class DetailedAdGetRepoCsv(GetRepo):
+class DetailedAdGetRepoCsv(GetDetailedAdRepo):
     def get_all(self) -> DetailedAds:
         return DetailedAdRepoCsv().get_all_detail()
 
@@ -158,7 +149,7 @@ class CreateAdsConfigJson(CreateAdsConfig):
         return Configuration.parse_file('configuration.json').__root__
 
 
-class GetDebugRepo(GetRepo):
+class GetDebugRepo(GetDetailedAdRepo):
     def get_all(self) -> FullAds:
         ad = FullAd(
             id='bc516e2abb5445ae9d03128a7a911f8f',  # dont show in template

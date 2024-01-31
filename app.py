@@ -1,14 +1,8 @@
 from flask import Flask, Response, request
 
-from ad.implementations import get_base_ads, get_detail_ads, get_full_ads_debug
+from ad.implementations import get_detail_ads, get_full_ads_debug
 
 app = Flask(__name__)
-
-
-@app.route('/rss')
-def base_rss():
-    data = get_base_ads(tag=request.args.get('tag'))
-    return Response(data, headers={'Content-Type': 'application/rss+xml'})
 
 
 @app.route('/detail-rss')

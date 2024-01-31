@@ -2,14 +2,14 @@ from dataclasses import dataclass
 from typing import Optional, Dict
 
 from ad.core.adapters import Presenter
-from ad.core.adapters.repository import GetRepo, ViewsRepo, Sender
-from ad.core.entities import BaseAd, View, BaseAds
+from ad.core.adapters.repository import GetDetailedAdRepo, ViewsRepo, Sender
+from ad.core.entities import View, DetailedAds
 from ad.core.errors import AdapterError, UseCaseError
 
 
 @dataclass
 class AdsSenderUseCase:
-    _ads_repository: GetRepo
+    _ads_repository: GetDetailedAdRepo
     _views_repository: ViewsRepo
     _sender: Sender
     _presenter: Presenter
@@ -25,8 +25,8 @@ class AdsSenderUseCase:
         views_ids = [view.id for view in views]
         unsent_ads_ids = set(ads_ids) - set(views_ids)
 
-        ads_d: Dict[str:BaseAd] = {ad.id: ad for ad in ads}
-        unsent_ads: BaseAds = [ads_d[unsent_ads_id] for unsent_ads_id in unsent_ads_ids]
+        ads_d: Dict[str:DetailedAds] = {ad.id: ad for ad in ads}
+        unsent_ads: DetailedAds = [ads_d[unsent_ads_id] for unsent_ads_id in unsent_ads_ids]
 
         messages = self._presenter.present(unsent_ads)
         for message, unsent_ad in zip(messages, unsent_ads):
