@@ -154,7 +154,7 @@ TELEGRAM_BOT_TOKEN и CHAT_ID
    ```
 2. Запустить телеграм бот.
     ```shell script
-    docker exec -it olx-server python -m ad.upload_ads &
+    docker exec -it olx-server python -m ad.telegram_sender &
     ```
 
 <p align="right">(<a href="#top">в начало</a>)</p>
