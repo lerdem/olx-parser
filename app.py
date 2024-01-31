@@ -7,13 +7,17 @@ app = Flask(__name__)
 
 @app.route('/detail-rss')
 def detail_rss():
-    data = get_detail_ads(tag=request.args.get('tag'))
+    data = get_detail_ads(
+        tag=request.args.get('tag'), sw=request.args.get('stop_words')
+    )
     return Response(data, headers={'Content-Type': 'application/rss+xml'})
 
 
 @app.route('/debug-template')
 def debug_template():
-    data = get_full_ads_debug(tag=request.args.get('tag'))
+    data = get_full_ads_debug(
+        tag=request.args.get('tag'), sw=request.args.get('stop_words')
+    )
     return Response(data, headers={'Content-Type': 'application/rss+xml'})
 
 
