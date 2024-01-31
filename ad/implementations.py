@@ -1,7 +1,6 @@
 import punq
 
 from ad.adapters.presenter import (
-    BaseAdFeedPresenter,
     DetailedAdFeedPresenter,
     FeedDebugPresenter,
 )

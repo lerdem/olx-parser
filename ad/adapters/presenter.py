@@ -11,32 +11,6 @@ from ad.core.entities import BaseAds, DetailedAds, FullAds, FullAd, BaseAd
 _BASE_TEXT = 'rss from olx'
 
 
-class BaseAdFeedPresenter(Presenter):
-    def present(self, ads: BaseAds):
-        items = []
-        for ad in ads:
-            item = Item(
-                guid=Guid(ad.id, isPermaLink=False),
-                title=ad.title,
-                link=ad.url,
-                author='lerdem',
-                pubDate=ad.parse_date,
-            )
-            items.append(item)
-
-        description = f'{ ads[0].tag}: {_BASE_TEXT}' if ads else _BASE_TEXT
-        title = ads[0].tag if ads else _BASE_TEXT
-        feed = Feed(
-            title=title,
-            link='http://127.0.0.1/rss',
-            description=description,
-            language='ru-Ru',
-            lastBuildDate=datetime.datetime.now(),
-            items=items,
-        )
-        return feed.rss()
-
-
 class DetailedAdFeedPresenter(Presenter):
     def present(self, ads: DetailedAds):
         items = []
