@@ -4,9 +4,9 @@ from random import randint
 import punq
 
 from ad.adapters.presenter import BaseAdTelegramPresenter
-from ad.adapters.repository import TelegramSender, ViewsRepoCsv, GetBaseAdRepoCsv
+from ad.adapters.repository import TelegramSender, ViewsRepoCsv, DetailedAdGetRepoCsv
 from ad.core.adapters import Presenter
-from ad.core.adapters.repository import GetRepo, ViewsRepo, Sender
+from ad.core.adapters.repository import ViewsRepo, Sender, GetDetailedAdRepo
 from ad.core.errors import UseCaseError
 from ad.core.usecases.ads_sender import AdsSenderUseCase
 from ad.logger import logger
@@ -28,7 +28,7 @@ def _telegram_sender_job():
 
 if __name__ == '__main__':
     container = punq.Container()
-    container.register(GetRepo, GetBaseAdRepoCsv)
+    container.register(GetDetailedAdRepo, DetailedAdGetRepoCsv)
     container.register(ViewsRepo, ViewsRepoCsv)
     container.register(Sender, TelegramSender)
     container.register(Presenter, BaseAdTelegramPresenter)

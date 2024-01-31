@@ -38,6 +38,6 @@ class View(BaseModel):
 
 BaseAds = List[BaseAd]
 DetailedAds = List[DetailedAd]
-AnyAds = Union[BaseAds, DetailedAds]
+AnyAds = Union[DetailedAds, FullAd]
 FullAds = List[FullAd]
 Views = List[View]

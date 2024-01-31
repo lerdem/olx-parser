@@ -5,7 +5,7 @@ import hypothesis.strategies as st
 from hypothesis import given, example, assume, settings
 
 from ad.core.adapters import Presenter
-from ad.core.adapters.repository import GetRepo, ViewsRepo, Sender
+from ad.core.adapters.repository import GetDetailedAdRepo, ViewsRepo, Sender
 from ad.core.errors import AdapterError, UseCaseError
 from ad.core.tests.strategies import BaseAdSt
 from ad.core.usecases.ads_sender import AdsSenderUseCase
@@ -13,7 +13,7 @@ from ad.core.usecases.ads_sender import AdsSenderUseCase
 
 class Test(unittest.TestCase):
     def setUp(self) -> None:
-        self.ads_repo = create_autospec(GetRepo)
+        self.ads_repo = create_autospec(GetDetailedAdRepo)
         self.view_repo = create_autospec(ViewsRepo)
         self.sender = create_autospec(Sender)
         self.presenter = create_autospec(Presenter)

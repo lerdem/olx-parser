@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, MutableSequence
 from pydantic import BaseModel, HttpUrl, root_validator
 
-from ad.core.entities import BaseAds, DetailedAd, BaseAd, Views, View
+from ad.core.entities import BaseAds, DetailedAd, BaseAd, Views, View, DetailedAds
 
 
 class CreateAdsRepo(ABC):
@@ -25,13 +25,13 @@ class DetailedAdRepo(ABC):
         pass
 
 
-class GetRepo(ABC):
+class GetDetailedAdRepo(ABC):
     @abstractmethod
-    def get_all(self) -> BaseAds:
+    def get_all(self) -> DetailedAds:
         pass
 
     @abstractmethod
-    def get_by_tag(self, tag: str) -> BaseAds:
+    def get_by_tag(self, tag: str) -> DetailedAds:
         pass
 
 
