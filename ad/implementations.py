@@ -15,7 +15,8 @@ from ad.core.adapters.repository import (
     CreateAdsRepo,
     CreateAdsConfig,
     DetailedAdRepo,
-    GetDetailedAdRepo)
+    GetDetailedAdRepo,
+)
 from ad.core.usecases.create_base_ads import CreateAdsUseCase
 from ad.core.usecases.create_detail_ad import CreateDetailedAdUseCase
 from ad.core.usecases.get_ads import GetAdsUseCase
