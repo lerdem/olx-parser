@@ -220,5 +220,15 @@ def _get_olx_search_html_base(url, session: Session) -> str: # or raises Adapter
 
 
 if __name__ == '__main__':
-    url = 'https://www.olx.ua/obyavlenie/rabota/buhgalter-v-magazin-IDMOigt.html#874994eb0c'
-    DetailedAdProviderOlx().get_raw(url)
+    from pprint import pprint as print
+    from ad.adapters.repository import CreateAdsConfigJson
+
+    config = CreateAdsConfigJson().get_configuration()[0]
+    print(config.search_url)
+    res = CreateProviderOlx().get_raw(config.search_url)
+    print(len(res))
+    print(res[0])
+    detail_url = res[0][2]
+    print(detail_url)
+    res = DetailedAdProviderOlx().get_raw(detail_url)
+    print(res)
