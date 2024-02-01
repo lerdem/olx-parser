@@ -120,7 +120,7 @@
    ```sh
    git clone https://github.com/lerdem/olx-parser.git
    ```
-2. Установка поисковых запросов для мониторинга в файле configuration.json ([пример конфигурации](https://github.com/lerdem/olx-parser/blob/master/configuration.json))
+2. Установка поисковых запросов для мониторинга в файле configuration.json ([пример конфигурации](configuration-json))
    ```sh
    cd olx-parser/ && nano configuration.json
    ```
@@ -137,9 +137,20 @@
 ## Использование через приложение с RSS (frontend 1)
 <div id="usage-rss"></div>
 
-Необходимо добавить feed в выбраный вами вариант frontend.
-Для этого на примере QuiteRSS добавьте в feed (через Ctrl+N) ссылку
+Необходимо добавить feed в выбраный вами вариант RSS клиента.
+Для этого на примере QuiteRSS добавьте feed (через Ctrl+N) ссылку
 вида http://<ip сервера где установлен backend>:12345/detail-rss
+
+Опциональные параметры:
+1. Get параметр tag позволяет создавить feed с объявлениями согластно 
+настроеному tag [configuration.json](configuration-json)
+
+2. Get параметр sw(сокращение от stop words) позволяет убирать из feed
+объявления с ненужными улицами(или любыми словами). Например мне не подходят
+объявления в которых указаны улицы Центральная и Вокзальная, для этого
+формируем запрос:
+http://<ip сервера где установлен backend>:12345/detail-rss?sw=Центральная&sw=Вокзальная
+
 
 <p align="right">(<a href="#top">в начало</a>)</p>
 
@@ -284,3 +295,4 @@ See the [open issues](https://github.com/lerdem/olx-parser/issues) for a full li
 [frontend-example]: https://quiterss.org/en/download
 [screenshot-1]: docs/screenshots/screenshot-1.png
 [architecture-diagram]: docs/diagrams/olx-parser-architecture.png
+[configuration-json]: https://github.com/lerdem/olx-parser/blob/master/configuration.json
