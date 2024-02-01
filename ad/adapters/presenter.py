@@ -6,7 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from rfeed import Feed, Item, Guid
 
 from ad.core.adapters import Presenter
-from ad.core.entities import BaseAds, DetailedAds, FullAds, FullAd, BaseAd
+from ad.core.entities import BaseAds, DetailedAds, FullAd, BaseAd
 
 _BASE_TEXT = 'rss from olx'
 
@@ -31,31 +31,6 @@ class DetailedAdFeedPresenter(Presenter):
             title=title,
             link='http://127.0.0.1/rss',
             description=description,
-            language='ru-Ru',
-            lastBuildDate=datetime.datetime.now(),
-            items=items,
-        )
-        return feed.rss()
-
-
-class FeedDebugPresenter(Presenter):
-    def present(self, ads: FullAds):
-        items = []
-        for ad in ads:
-            item = Item(
-                guid=Guid(ad.id, isPermaLink=False),
-                title=ad.title,
-                link=ad.url,
-                description=_get_detail(ad),
-                # author="Santiago L. Valdarrama",
-                pubDate=ad.parse_date,
-            )
-            items.append(item)
-
-        feed = Feed(
-            title='Olx Квартиры(Детали)',
-            link='http://127.0.0.1/rss',
-            description='This is an example of how to use rfeed to generate an RSS 2.0 feed',
             language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
             items=items,

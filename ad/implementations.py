@@ -1,9 +1,6 @@
 import punq
 
-from ad.adapters.presenter import (
-    DetailedAdFeedPresenter,
-    FeedDebugPresenter,
-)
+from ad.adapters.presenter import DetailedAdFeedPresenter
 from ad.adapters.provider import DetailedAdProviderOlx, CreateProviderOlx
 from ad.adapters.repository import (
     DetailedAdGetRepoCsv,
@@ -43,7 +40,7 @@ get_detail_ads = _get_ads_usecase.execute
 
 container3 = punq.Container()
 container3.register(GetDetailedAdRepo, GetDebugRepo)
-container3.register(Presenter, FeedDebugPresenter)
+container3.register(Presenter, DetailedAdFeedPresenter)
 container3.register(GetAdsUseCase)
 _get_ads_debug_usecase = container3.resolve(GetAdsUseCase)
 get_full_ads_debug = _get_ads_debug_usecase.execute
