@@ -38,10 +38,12 @@ ad_detail_uploader = container.resolve(CreateDetailedAdUseCase)
 container.register(GetDetailedAdRepo, DetailedAdGetRepoCsv)
 container.register(Presenter, DetailedAdFeedPresenter)
 container.register(GetAdsUseCase)
-get_detail_ads = container.resolve(GetAdsUseCase)
+_get_ads_usecase = container.resolve(GetAdsUseCase)
+get_detail_ads = _get_ads_usecase.execute
 
 container3 = punq.Container()
 container3.register(GetDetailedAdRepo, GetDebugRepo)
 container3.register(Presenter, FeedDebugPresenter)
 container3.register(GetAdsUseCase)
-get_full_ads_debug = container3.resolve(GetAdsUseCase)
+_get_ads_debug_usecase = container3.resolve(GetAdsUseCase)
+get_full_ads_debug = _get_ads_debug_usecase.execute

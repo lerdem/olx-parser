@@ -23,21 +23,32 @@ class TestGetAdsUseCase(unittest.TestCase):
         self.ads_repo.get_all.return_value = return_repo
 
         get_ads = GetAdsUseCase(_repo=self.ads_repo, _presenter=self.presenter)
-        get_ads(tag=None, stop_words=None)
+        get_ads.execute(tag=None, stop_words=[])
         presenter_call_arg: BaseAds = self.presenter.present.call_args_list[0][0][0]
         self.assertEqual(len(presenter_call_arg), len(return_repo))
 
-    @example(text='Сдам 2х комнатную квартиру по улице Тепличная', is_ignore=True)
     @example(
+        stop_words=['вул. Киснева', 'Образцова'],
+        text='Сдам 2х комнатную квартиру по улице Тепличная',
+        is_ignore=True
+    )
+    @example(
+        stop_words=['вул. Киснева', 'Образцова'],
         text='Сдам 2 кімнатну квартиру, у кінеці пр. Слобожанське, вул. Киснева 2',
         is_ignore=False,
     )
+    @example(
+        stop_words=[],
+        text='',
+        is_ignore=True,
+    )
     @given(
+        stop_words=st.just(['вул. Киснева', 'Образцова']),
         text=st.just('Сдам 2-ком. Квартиру. Калиновой и Образцова. 4/9 Эт.'),
         is_ignore=st.just(False),
     )
-    def test_stop_word_ignore(self, text, is_ignore):
-        res = _stop_word_ignore(['вул. Киснева', 'Образцова'], text)
+    def test_stop_word_ignore(self, stop_words, text, is_ignore):
+        res = _stop_word_ignore(stop_words, text)
         self.assertIs(
             res, is_ignore, msg='если есть совпадение, то возвращаеться False'
         )
