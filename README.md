@@ -120,7 +120,7 @@
    ```sh
    git clone https://github.com/lerdem/olx-parser.git
    ```
-2. Установка поисковых запросов для мониторинга в файле configuration.json ([пример конфигурации](configuration-json))
+2. Установка поисковых запросов для мониторинга в файле configuration.json ([пример конфигурации][configuration-json])
    ```sh
    cd olx-parser/ && nano configuration.json
    ```
@@ -143,7 +143,7 @@
 
 Опциональные параметры:
 1. Get параметр tag позволяет создавить feed с объявлениями согластно 
-настроеному tag [configuration.json](configuration-json)
+настроеному tag [configuration.json][configuration-json]
 
 2. Get параметр sw(сокращение от stop words) позволяет убирать из feed
 объявления с ненужными улицами(или любыми словами). Например мне не подходят
