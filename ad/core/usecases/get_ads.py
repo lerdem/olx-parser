@@ -12,9 +12,9 @@ class GetAdsUseCase:
     _repo: GetDetailedAdRepo
     _presenter: Presenter
 
-    def __call__(self, tag: Optional[str], stop_words: Optional[List[str]]):
+    def execute(self, tag: Optional[str], stop_words: List[str]):
         ads = self._repo.get_by_tag(tag) if tag is not None else self._repo.get_all()
-        if stop_words is not None:
+        if stop_words:
             ads = self._exclude_stop_words_from_ads(stop_words, ads)
         last_30_ads = sorted(ads, key=lambda x: x.parse_date, reverse=True)[:30]
         return self._presenter.present(last_30_ads)
@@ -28,6 +28,8 @@ class GetAdsUseCase:
 
 
 def _stop_word_ignore(stop_words: List[str], text: str):
+    if not stop_words and not text:
+        return True
     # \b \b == целое слово(или группу слов) разделенная пробелами
     pattern = re.compile('|'.join(rf'\b{word}\b' for word in stop_words))
     # match    - "bla" - True - False
