@@ -38,6 +38,16 @@ class TestGetAdsUseCase(unittest.TestCase):
         is_ignore=False,
     )
     @example(
+        stop_words=['Образцова', 'Левобережн',],
+        text='Квартира на левобережном в аренду. Не рієлтор. - 7 000 грн.',
+        is_ignore=False,
+    )
+    @example(
+        stop_words=['Образцова', 'левобережн', ],
+        text='Сдам 2к Фестивальный , Левобережный 3 рядом Караван , Ашан, Березинка - 7 000 грн.',
+        is_ignore=False,
+    )
+    @example(
         stop_words=[],
         text='',
         is_ignore=True,

@@ -30,8 +30,8 @@ class GetAdsUseCase:
 def _stop_word_ignore(stop_words: List[str], text: str):
     if not stop_words and not text:
         return True
-    # \b \b == целое слово(или группу слов) разделенная пробелами
-    pattern = re.compile('|'.join(rf'\b{word}\b' for word in stop_words))
+    # слово или часть слова (слева) начиная с пробела, без учета регистра
+    pattern = re.compile('|'.join(rf'\b{word}' for word in stop_words), re.IGNORECASE)
     # match    - "bla" - True - False
     # no match - None  - False - True
     return not bool(pattern.search(text))
