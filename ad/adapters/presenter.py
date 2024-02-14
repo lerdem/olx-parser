@@ -2,7 +2,7 @@ import datetime
 from typing import List
 
 from jinja2 import Environment, FileSystemLoader
-
+from premailer import transform
 from rfeed import Feed, Item, Guid
 
 from ad.core.adapters import Presenter
@@ -52,7 +52,10 @@ def _get_detail(ad: FullAd) -> str:
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader)
     template = env.get_template('description.html')
-    return template.render(ad=ad)
+    html = template.render(ad=ad)
+    inline_html = transform(html)
+    return inline_html
+
 
 
 if __name__ == '__main__':

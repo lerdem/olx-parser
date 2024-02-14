@@ -7,6 +7,7 @@ pytz
 gunicorn
 punq
 python-telegram-bot~=11.1.0
+premailer~=3.10.0
 
 # to fix flask dependency
 # https://stackoverflow.com/questions/77213053/why-did-flask-start-failing-with-importerror-cannot-import-name-url-quote-fr
