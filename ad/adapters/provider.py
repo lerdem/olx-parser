@@ -142,7 +142,9 @@ class _BaseAdProviderOlx(DetailedAdProvider):
             raise AdapterError('Не удалось распарсить id обьявления')
 
     def get_description(self, dom) -> str:
-        return dom.xpath('.//div[contains(@data-cy, "ad_description")]/div/text()')[0]
+        # ['Сдаётся квартира общая площадь 45кв.м', '\nКалиновая(Образцова) . Квартира расположена на 2 этаже 5 этажного кирпичного дома.', '\nБез животных ', '\n06******44', '\n09******44']
+        description_parts: List[str] = dom.xpath('.//div[contains(@data-cy, "ad_description")]/div/text()')
+        return ''.join(description_parts)
 
     def get_name(self, dom) -> str:
         card = dom.xpath('.//div[contains(@data-cy, "seller_card")]')[0]
