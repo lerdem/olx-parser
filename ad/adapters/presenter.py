@@ -1,4 +1,7 @@
+import configparser
 import datetime
+import ipaddress
+from pathlib import Path
 from typing import List
 
 from jinja2 import Environment, FileSystemLoader
@@ -7,11 +10,18 @@ from rfeed import Feed, Item, Guid
 
 from ad.core.adapters import Presenter
 from ad.core.entities import BaseAds, DetailedAds, FullAd, BaseAd
+from ad.core.errors import AdapterError
 
-_BASE_TEXT = 'rss from olx'
+_BASE_TEXT = 'RSS feed parsed from Olx'
+
+BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 
 
 class DetailedAdFeedPresenter(Presenter):
+    def __init__(self):
+        self._port: int = 12345
+        self._host_ip: str = self._get_host_ip()
+
     def present(self, ads: DetailedAds):
         items = []
         for ad in ads:
@@ -25,11 +35,11 @@ class DetailedAdFeedPresenter(Presenter):
             )
             items.append(item)
 
-        description = f'{ ads[0].tag}: {_BASE_TEXT}' if ads else _BASE_TEXT
+        description = f'{ads[0].tag}: {_BASE_TEXT}' if ads else _BASE_TEXT
         title = ads[0].tag if ads else _BASE_TEXT
         feed = Feed(
             title=title,
-            link='http://127.0.0.1/rss',
+            link=f'http://{self._host_ip}:{self._port}/detail-rss',
             description=description,
             language='ru-Ru',
             lastBuildDate=datetime.datetime.now(),
@@ -37,6 +47,25 @@ class DetailedAdFeedPresenter(Presenter):
         )
         return feed.rss()
 
+    @staticmethod
+    def _get_config():
+        config_file = BASE_DIR.joinpath('environment.ini')
+        config = configparser.ConfigParser()
+        with open(config_file) as raw_config_file:
+            config.read_file(raw_config_file)
+        return config
+
+    @staticmethod
+    def _get_host_ip() -> str: # or raises AdapterError
+        config = DetailedAdFeedPresenter._get_config()
+        maybe_ip = config.get('general', 'IP')
+        try:
+            # https://stackoverflow.com/questions/319279/how-to-validate-ip-address-in-python
+            sure_ip = ipaddress.ip_address(maybe_ip)
+        except ValueError as e:
+            raise AdapterError(e)
+        else:
+            return str(sure_ip)
 
 class BaseAdTelegramPresenter(Presenter):
     def present(self, ads: BaseAds) -> List[str]:
