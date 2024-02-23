@@ -15,7 +15,8 @@ from ad.core.adapters.repository import (
     Configurations,
     ViewsRepo,
     Sender,
-    GetDetailedAdRepo)
+    GetDetailedAdRepo,
+)
 from ad.core.entities import (
     BaseAds,
     BaseAd,

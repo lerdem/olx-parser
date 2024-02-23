@@ -45,7 +45,7 @@ class DetailedAdFeedPresenter(Presenter):
         return feed.rss()
 
     @staticmethod
-    def _get_host_ip() -> str: # or raises AdapterError
+    def _get_host_ip() -> str:  # or raises AdapterError
         config = get_config()
         maybe_ip = config.get('general', 'IP')
         try:
@@ -55,6 +55,7 @@ class DetailedAdFeedPresenter(Presenter):
             raise AdapterError(e)
         else:
             return str(sure_ip)
+
 
 class BaseAdTelegramPresenter(Presenter):
     def present(self, ads: BaseAds) -> List[str]:
@@ -73,7 +74,6 @@ def _get_detail(ad: FullAd) -> str:
     html = template.render(ad=ad)
     inline_html = transform(html)
     return inline_html
-
 
 
 if __name__ == '__main__':
