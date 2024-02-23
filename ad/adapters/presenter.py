@@ -1,20 +1,17 @@
-import configparser
 import datetime
 import ipaddress
-from pathlib import Path
 from typing import List
 
 from jinja2 import Environment, FileSystemLoader
 from premailer import transform
 from rfeed import Feed, Item, Guid
 
+from ad.adapters.utils import get_config
 from ad.core.adapters import Presenter
 from ad.core.entities import BaseAds, DetailedAds, FullAd, BaseAd
 from ad.core.errors import AdapterError
 
 _BASE_TEXT = 'RSS feed parsed from Olx'
-
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 
 
 class DetailedAdFeedPresenter(Presenter):
@@ -48,16 +45,8 @@ class DetailedAdFeedPresenter(Presenter):
         return feed.rss()
 
     @staticmethod
-    def _get_config():
-        config_file = BASE_DIR.joinpath('environment.ini')
-        config = configparser.ConfigParser()
-        with open(config_file) as raw_config_file:
-            config.read_file(raw_config_file)
-        return config
-
-    @staticmethod
     def _get_host_ip() -> str: # or raises AdapterError
-        config = DetailedAdFeedPresenter._get_config()
+        config = get_config()
         maybe_ip = config.get('general', 'IP')
         try:
             # https://stackoverflow.com/questions/319279/how-to-validate-ip-address-in-python

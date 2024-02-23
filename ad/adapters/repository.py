@@ -2,11 +2,11 @@ import configparser
 import csv
 import os
 from itertools import chain
-from pathlib import Path
 from typing import Dict, List
 from telegram import Bot
 from telegram.bot import InvalidToken
 
+from ad.adapters.utils import get_config, BASE_DIR
 from ad.core.adapters.repository import (
     CreateAdsRepo,
     DetailedAdRepo,
@@ -28,8 +28,6 @@ from ad.core.entities import (
     View,
 )
 from ad.core.errors import AdapterError
-
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 
 _BASE_FILE_NAME = BASE_DIR.joinpath('.base-ads.csv')
 _DETAIL_FILE_NAME = BASE_DIR.joinpath('.detail-ads.csv')
@@ -213,8 +211,7 @@ class TelegramSender(Sender):
 
     @staticmethod
     def _get_token():
-        config = TelegramSender._get_config()
-
+        config = get_config()
         try:
             return config.get('secrets', 'TELEGRAM_BOT_TOKEN')
         except configparser.NoOptionError:
@@ -225,16 +222,8 @@ class TelegramSender(Sender):
             )
 
     @staticmethod
-    def _get_config():
-        config_file = BASE_DIR.joinpath('environment.ini')
-        config = configparser.ConfigParser()
-        with open(config_file) as raw_config_file:
-            config.read_file(raw_config_file)
-        return config
-
-    @staticmethod
     def _get_chat_id() -> int:
-        config = TelegramSender._get_config()
+        config = get_config()
         try:
             return config.getint('secrets', 'CHAT_ID')
         except ValueError:
