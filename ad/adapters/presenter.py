@@ -3,7 +3,6 @@ import ipaddress
 from typing import List
 
 from jinja2 import Environment, FileSystemLoader
-from premailer import transform
 from rfeed import Feed, Item, Guid
 
 from ad.adapters.utils import get_config
@@ -71,9 +70,7 @@ def _get_detail(ad: FullAd) -> str:
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader)
     template = env.get_template('description.html')
-    html = template.render(ad=ad)
-    inline_html = transform(html)
-    return inline_html
+    return template.render(ad=ad)
 
 
 if __name__ == '__main__':

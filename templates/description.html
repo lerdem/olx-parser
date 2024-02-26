@@ -5,13 +5,13 @@
     <title>{{ ad.title }}</title>
     <meta name="description" content="{{ ad.description }}" />
 </head>
-<body>
-    <div class="container">
+<body style="background: #ffffff; color: #333333; padding: 0 4px;">
+    <div class="container" style="max-width: 1280px; margin: auto;">
         <h2>{{ ad.title }}</h2>
-        <div class="info">
-            <div class="contacts">
+        <div class="info" style="display: table; width: calc(100% - 26px); margin: 16px 0; padding: 16px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.16),0 1px 4px 0 rgba(0,0,0,.16); border-radius: 4px;">
+            <div class="contacts" style="display: table-cell; width: 50%; text-align: left;">
                 {% if ad.name %}
-                <div class="contacts__name">{{ ad.name }}</div>
+                <div class="contacts__name" style="font-weight: bold;">{{ ad.name }}</div>
                 {% endif %}
 {#                {% if ad.phone %}#}
 {#                <div class="contacts__phone">#}
@@ -19,11 +19,11 @@
 {#                </div>#}
 {#                {% endif %}#}
             </div>
-            <div class="link-details">
+            <div class="link-details" style="display: table-cell; width: 50%; text-align: right;">
                 <div>
                     <a href="{{ ad.url }}">Открыть источник</a>
                 </div>
-                <div class="parse-date">{{ ad.parse_date }}</div>
+                <div class="parse-date" style="margin-top: 8px;">{{ ad.parse_date }}</div>
             </div>
         </div>
         <div class="content">{{ ad.description }}</div>
@@ -43,17 +43,15 @@
         </div>
         <div class="carousel">
             {% for image_url in ad.image_urls %}
-                <input type="radio" name="slides" id="slide-{{ loop.index}}" {% if loop.first %}checked{% endif %}>
+                <input type="radio" name="slides" style="display: none;" id="slide-{{ loop.index}}" {% if loop.first %}checked{% endif %}>
             {% endfor %}
             <div class="carousel__slides">
                 {% for image_url in ad.image_urls %}
-                    <div class="carousel__slide">
+                    <div class="carousel__slide" style="margin: 8px 0;">
                         <figure>
-                            <div class="image-wrap">
-                                <img src="{{ image_url }}" alt="">
-                            </div>
+                            <img src="{{ image_url }}" alt="" style="width: 100%;">
                         </figure>
-                        <div class="carousel__actions">
+                        <div class="carousel__actions" style="display: none;">
                             <label class="carousel__action" for="slide-{% if not loop.first %}{{ loop.index - 1}}{% else %}{{ loop.length }}{% endif %}">
                                 <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
                                     <use href="#slide-action-icon-left"></use>
@@ -69,10 +67,10 @@
                 {% endfor %}
             </div>
         </div>
-        <div class="info">
-            <div class="contacts">
+        <div class="info" style="display: table; width: calc(100% - 26px); margin: 16px 0; padding: 16px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.16),0 1px 4px 0 rgba(0,0,0,.16); border-radius: 4px;">
+            <div class="contacts" style="display: table-cell; width: 50%; text-align: left;">
                 {% if ad.name %}
-                <div class="contacts__name">{{ ad.name }}</div>
+                <div class="contacts__name" style="font-weight: bold;">{{ ad.name }}</div>
                 {% endif %}
 {#                {% if ad.phone %}#}
 {#                <div class="contacts__phone">#}
@@ -80,84 +78,43 @@
 {#                </div>#}
 {#                {% endif %}#}
             </div>
-            <div class="link-details">
+            <div class="link-details" style="display: table-cell; width: 50%; text-align: right;">
                 <div>
                     <a href="{{ ad.url }}">Открыть источник</a>
                 </div>
-                <div class="parse-date">{{ ad.parse_date }}</div>
+                <div class="parse-date" style="margin-top: 8px;">{{ ad.parse_date }}</div>
             </div>
         </div>
     </div>
+
     <style>
-        *::after,
-        *::before {
-            box-sizing: border-box;
-        }
-        body {
-            background: #ffffff;
-            color: #333333;
-            padding: 0 4px;
-        }
-        .container {
-            max-width: 1280px;
-            margin: auto;
-        }
 
-
-        .info {
-            display: table;
-            width: calc(100% - 26px);
-            margin: 16px 0;
-            padding: 16px;
-            box-shadow: 0 2px 4px 0 rgba(0,0,0,.16),0 1px 4px 0 rgba(0,0,0,.16);
-            border-radius: 4px;
-        }
-
-        .contacts,
-        .link-details {
-           display: table-cell;
-           width: 50%;
-        }
-
-        .contacts {
-            text-align: left;
-        }
-
-        .link-details {
-            text-align: right;
-        }
-
-        .contacts__name {
-            font-weight: bold;
-        }
-
-        .contacts__phone,
-        .parse-date {
-            margin-top: 8px;
-        }
-
-
-        .carousel {
-            margin-top: 24px;
-            display: block;
-            position: relative;
-        }
-
-        .carousel > input {
-            clip: rect(1px, 1px, 1px, 1px);
-            clip-path: inset(50%);
-            height: 1px;
-            width: 1px;
-            margin: -1px;
+        .carousel__slides {
+            height: 90vh;
             overflow: hidden;
-            padding: 0;
-            position: absolute;
         }
 
-        {% for image_url in ad.image_urls %}
-            .carousel > input:nth-of-type({{ loop.index }}):checked ~ .carousel__slides .carousel__slide:nth-of-type({{ loop.index }}) { margin-left: -{{ loop.index0 * 100 }}%; }
-            .carousel > input:nth-of-type({{ loop.index }}):checked ~ .carousel__slides .carousel__slide:nth-of-type({{ loop.index }}) .carousel__actions { display: block }
-        {% endfor %}
+        .carousel__slide {
+            display: none;
+            position: relative;
+            z-index: 0;
+            background-color: #333333;
+            height: inherit;
+            margin: 0 !important;
+        }
+
+
+        .carousel__slide figure {
+            text-align: center;
+            height: inherit;
+            margin: 0;
+        }
+
+        .carousel__slide img {
+            object-fit: contain;
+            height: inherit;
+            width: 100%;
+        }
 
         .carousel__actions {
             display: none;
@@ -178,61 +135,11 @@
             cursor: pointer;
         }
 
-        .carousel__slides {
-            position: relative;
-            z-index: 1;
-            padding: 0;
-            margin: 0;
-            overflow: hidden;
-            white-space: nowrap;
-            box-sizing: border-box;
-            display: flex;
-        }
+        {% for image_url in ad.image_urls %}
+            .carousel > input:nth-of-type({{ loop.index }}):checked ~ .carousel__slides .carousel__slide:nth-of-type({{ loop.index }}) { display: block; }
+            .carousel > input:nth-of-type({{ loop.index }}):checked ~ .carousel__slides .carousel__slide:nth-of-type({{ loop.index }}) .carousel__actions { display: block !important }
+        {% endfor %}
 
-        .carousel__slide {
-            position: relative;
-            display: block;
-            flex: 1 0 100%;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            transition: margin-left 300ms ease-out;
-            vertical-align: top;
-            box-sizing: border-box;
-            white-space: normal;
-        }
-
-        .carousel__slide figure {
-            display: flex;
-            margin: 0;
-        }
-
-        .carousel__slide  .image-wrap {
-            position: relative;
-            width: 100%;
-        }
-        .carousel__slide  .image-wrap:before {
-            display: block;
-            content: "";
-            width: 100%;
-            padding-top: 66.6666666667%;
-        }
-        .carousel__slide img {
-            display: block;
-            flex: 1 1 auto;
-            object-fit: cover;
-        }
-
-
-        .carousel__slide  .image-wrap > img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-        }
     </style>
 </body>
 </html>
