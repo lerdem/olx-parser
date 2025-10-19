@@ -40,7 +40,7 @@ class _CreateProviderOlx1(CreateAdsProvider):
 
     @staticmethod
     def _process_item(item):
-        title = item.xpath('.//h6/text()')[0]
+        title = item.xpath('.//div[contains(@data-cy, "ad-card-title")]//h4/text()')[0]
         default_link = 'https://www.olx.ua'
         link = default_link + item.xpath('.//a/@href')[0]
         dirty_price = item.xpath('.//p[@data-testid="ad-price"]/text()')[0] # '6 000 грн.'
