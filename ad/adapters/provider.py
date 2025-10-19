@@ -4,6 +4,7 @@ from os.path import join, exists
 from pathlib import Path
 from typing import List, Tuple, Dict, Type
 from lxml import etree
+import lxml.etree as ET
 from requests import Session, HTTPError, ConnectionError
 from requests.exceptions import ChunkedEncodingError
 
@@ -34,7 +35,7 @@ class _CreateProviderOlx1(CreateAdsProvider):
             './/div[contains(@data-testid, "listing-grid")]'
         )
         return [
-            self._process_item(item)
+            self._wraped_process_item(item)
             for item in search_area.xpath('.//div[contains(@data-cy, "l-card")]')
         ]
 
@@ -45,6 +46,22 @@ class _CreateProviderOlx1(CreateAdsProvider):
         link = default_link + item.xpath('.//a/@href')[0]
         dirty_price = item.xpath('.//p[@data-testid="ad-price"]/text()')[0] # '6 000 грн.'
         return title, dirty_price, link
+
+    def _wraped_process_item(self, item):
+        try:
+            data = self._process_item(item)
+        except Exception as e:
+            with open('item.pkl', 'wb') as f:
+                pickle.dump(ET.tostring(item), f)
+            raise
+        else:
+            return data
+
+    @staticmethod
+    def _restore():
+        with open('item.pkl', 'rb') as f:
+            item = ET.fromstring(pickle.load(f))
+            import ipdb; ipdb.set_trace()
 
 
 class _CreateProviderOlx2(CreateAdsProvider):
@@ -220,17 +237,18 @@ def _get_olx_search_html_base(url, session: Session) -> str: # or raises Adapter
         raise AdapterError(f'{e}, на этапе запроса к ОЛХ')
 
 
-
 if __name__ == '__main__':
     from pprint import pprint as print
     from ad.adapters.repository import CreateAdsConfigJson
 
-    config = CreateAdsConfigJson().get_configuration()[0]
-    print(config.search_url)
-    res = CreateProviderOlx().get_raw(config.search_url)
-    print(len(res))
-    print(res[0])
-    detail_url = res[0][2]
-    print(detail_url)
-    res = DetailedAdProviderOlx().get_raw(detail_url)
-    print(res)
+    # config = CreateAdsConfigJson().get_configuration()[0]
+    # print(config.search_url)
+    # res = CreateProviderOlx().get_raw(config.search_url)
+    # print(len(res))
+    # print(res[0])
+    # detail_url = res[0][2]
+    # print(detail_url)
+    # res = DetailedAdProviderOlx().get_raw('https://www.olx.ua/d/uk/obyavlenie/sdam-kvartiru-1-k-IDUv2pa.html')
+    # print(res)
+    # docker exec -it olx-server python -m ad.adapters.provider
+    _CreateProviderOlx1._restore()
