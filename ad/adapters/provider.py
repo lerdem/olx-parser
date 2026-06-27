@@ -66,7 +66,9 @@ class _CreateProviderOlx1(CreateAdsProvider):
     def _restore():
         with open('item.pkl', 'rb') as f:
             item = ET.fromstring(pickle.load(f))
-            import ipdb; ipdb.set_trace()
+            import ipdb
+
+            ipdb.set_trace()
 
 
 class _CreateProviderOlx2(CreateAdsProvider):
@@ -165,7 +167,9 @@ class _BaseAdProviderOlx(DetailedAdProvider):
 
     def get_description(self, dom) -> str:
         # ['Сдаётся квартира общая площадь 45кв.м', '\nКалиновая(Образцова) . Квартира расположена на 2 этаже 5 этажного кирпичного дома.', '\nБез животных ', '\n06******44', '\n09******44']
-        description_parts: List[str] = dom.xpath('.//div[contains(@data-cy, "ad_description")]/div/text()')
+        description_parts: List[str] = dom.xpath(
+            './/div[contains(@data-cy, "ad_description")]/div/text()'
+        )
         return ''.join(description_parts)
 
     def get_name(self, dom) -> str:
@@ -217,12 +221,12 @@ def get_session() -> Session:
         pickle.dump(s, open(_path, 'wb'))
 
 
-def _get_olx_search_html(url)-> str: # or raises AdapterError
+def _get_olx_search_html(url) -> str:  # or raises AdapterError
     with get_session() as session:
         return _get_olx_search_html_base(url, session)
 
 
-def _get_olx_search_html_base(url, session: Session) -> str: # or raises AdapterError
+def _get_olx_search_html_base(url, session: Session) -> str:  # or raises AdapterError
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0',
         'Referer': url,
