@@ -10,11 +10,13 @@ from requests.exceptions import ChunkedEncodingError
 
 from ad.core.adapters.provider import CreateAdsProvider, DetailedAdProvider
 from ad.core.errors import AdapterError
+from ad.logger import log_function_call
 
 
 class _CreateProviderOlx1(CreateAdsProvider):
     _example_url = 'https://www.olx.ua/d/nedvizhimost/kvartiry/dolgosrochnaya-arenda-kvartir/dnepr/?currency=UAH&search[private_business]=private&search[order]=created_at%3Adesc&search[filter_float_price%3Ato]=7000&search[filter_float_total_area%3Afrom]=30&search[filter_float_total_area%3Ato]=1000&view=list'
 
+    @log_function_call
     def get_raw(self, start_url) -> List[Tuple]:
         html = _get_olx_search_html(start_url)
         dom = etree.HTML(html)
