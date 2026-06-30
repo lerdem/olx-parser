@@ -8,24 +8,25 @@ server {
         root /var/www/html;
     }
 
-    # Fallback to keep your normal HTTP traffic routing to the app on port 80 if needed
     location / {
-        proxy_pass http://app:8000;
+        return 301 https://$host:12345$request_uri;
     }
 }
 
 server {
+    # Only listen for SSL here
     listen 12345 ssl;
     server_name _;
 
-    # Standard paths (Certbot creates a "dummy" or named folder based on your first setup)
-    # You will just point this to the folder where the certs land.
     ssl_certificate /etc/letsencrypt/live/olx-certs/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/olx-certs/privkey.pem;
 
-    # Dynamic auto-upgrade: If plain HTTP hits port 12345, automatically
-    # bounce it to HTTPS using whatever domain/IP the user typed in.
-    error_page 497 https://$host:$server_port$request_uri;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # FIX: Catch plain HTTP requests (error 497) and explicitly force a 301
+    # redirect to the HTTPS version using Nginx's internal request URI.
+    error_page 497 =301 https://$host:12345$request_uri;
 
     location / {
         proxy_pass http://app:8000;
