@@ -1,0 +1,8 @@
+<td id="cell-title-{{ ad.id }}"
+    hx-get="/ads/{{ ad.id }}/edit-title" 
+    hx-trigger="click consume" 
+    hx-target="this" 
+    hx-swap="outerHTML"
+    style="cursor: pointer;">
+    {{ ad.title }}
+</td>

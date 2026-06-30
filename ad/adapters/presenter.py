@@ -67,11 +67,26 @@ class BaseAdTelegramPresenter(Presenter):
         return f'''<a href='{ad.url}'>{ad.title}</a>'''.encode('utf8').decode('utf8')
 
 
+class DetailedAdDashboardPresenter(Presenter):
+
+    def present(self, ads: DetailedAds):
+        return _get_table(ads)
+
+
 def _get_detail(ad: FullAd) -> str:
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader)
     template = env.get_template('description.html')
     html = template.render(ad=ad)
+    inline_html = transform(html)
+    return inline_html
+
+
+def _get_table(ads: DetailedAds) -> str:
+    file_loader = FileSystemLoader('templates')
+    env = Environment(loader=file_loader)
+    template = env.get_template('table_dashboard.html')
+    html = template.render(ads=ads)
     inline_html = transform(html)
     return inline_html
 

@@ -1,0 +1,17 @@
+<td id="cell-title-{{ ad.id }}"
+    hx-target="this" 
+    hx-swap="outerHTML">
+    <form hx-post="/ads/{{ ad.id }}/update-title" style="margin: 0;">
+        <input type="text" 
+               name="title" 
+               value="{{ wrong_input }}" 
+               hx-trigger="blur" 
+               hx-post="/ads/{{ ad.id }}/update-title"
+               autofocus 
+               style="margin: 0; width: 100%; border: 2px solid #ff4444;">
+        
+        <small style="color: #ff4444; display: block; margin-top: 3px; font-weight: bold;">
+            {{ error }}
+        </small>
+    </form>
+</td>

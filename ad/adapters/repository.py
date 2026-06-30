@@ -147,34 +147,44 @@ class CreateAdsConfigJson(CreateAdsConfig):
     def get_configuration(self) -> Configurations:
         return Configuration.parse_file('configuration.json').__root__
 
+def _get_ad(random_id: str) -> FullAd:
+    return FullAd(
+        id=random_id,  # dont show in template
+        tag='arenda-dnepr',  # dont show in template
+        title='Сдам 2-х комнатную квартиру на длительный период - Днепр',
+        publication_date='2021-11-04 12:58:45',  # dont show in template
+        parse_date='2021-11-04 12:58:45',
+        url='https://www.olx.ua/d/obyavlenie/sdam-2-h-komnatnuyu-kvartiru-na-dlitelnyy-period-IDN7dzO.html',
+        description='Сдам 2-х комнатную квартиру на длительный период для семейной пары в районе '
+        '97 школы'
+        ' (Ул. Братьев Трофимовых 40), 6 этаж 9-и этажного дома, не угловая, теплая, есть лоджия, застеклена.',
+        image_urls=[
+            'https://ireland.apollo.olxcdn.com:443/v1/files/dodwyas1emy32-UA/image;s=4000x3000',
+            'https://ireland.apollo.olxcdn.com:443/v1/files/dodwyas1emy32-UA/image;s=4000x3000',
+            'https://ireland.apollo.olxcdn.com:443/v1/files/dodwyas1emy32-UA/image;s=4000x3000',
+            'https://ireland.apollo.olxcdn.com:443/v1/files/dodwyas1emy32-UA/image;s=4000x3000',
+            'https://ireland.apollo.olxcdn.com:443/v1/files/dodwyas1emy32-UA/image;s=4000x3000',
+        ],
+        external_id='725276749',
+        name='Феликс',
+        phone='+380995437751',
+    )
 
 class GetDebugRepo(GetDetailedAdRepo):
     def get_all(self) -> FullAds:
-        ad = FullAd(
-            id='bc516e2abb5445ae9d03128a7a911f8f',  # dont show in template
-            tag='arenda-dnepr',  # dont show in template
-            title='Сдам 2-х комнатную квартиру на длительный период - Днепр',
-            publication_date='2021-11-04 12:58:45',  # dont show in template
-            parse_date='2021-11-04 12:58:45',
-            url='https://www.olx.ua/d/obyavlenie/sdam-2-h-komnatnuyu-kvartiru-na-dlitelnyy-period-IDN7dzO.html',
-            description='Сдам 2-х комнатную квартиру на длительный период для семейной пары в районе '
-            '97 школы'
-            ' (Ул. Братьев Трофимовых 40), 6 этаж 9-и этажного дома, не угловая, теплая, есть лоджия, застеклена.',
-            image_urls=[
-                'https://ireland.apollo.olxcdn.com:443/v1/files/dodwyas1emy32-UA/image;s=4000x3000',
-                'https://ireland.apollo.olxcdn.com/v1/files/pxokmbrmwf9v2-UA/image;s=1104x1472',
-                'https://ireland.apollo.olxcdn.com/v1/files/ve9s1d20cn211-UA/image;s=1104x1472',
-                'https://ireland.apollo.olxcdn.com/v1/files/ralzthng8yp52-UA/image;s=1944x2592',
-                'https://ireland.apollo.olxcdn.com/v1/files/il2y84fnyo5w-UA/image;s=591x1280',
-            ],
-            external_id='725276749',
-            name='Феликс',
-            phone='+380995437751',
-        )
-        return [ad]
+        return [_get_ad('bc516e2abb5445ae9d03128a7a911f8f')]
 
     def get_by_tag(self, tag: str) -> DetailedAds:
         return _filter_by_tag(tag, self.get_all())
+
+
+class GetTableDebugRepo(GetDebugRepo):
+    def get_all_detail(self) -> DetailedAds:
+        with open(_DETAIL_FILE_NAME) as csvfile:
+            reader = csv.DictReader(csvfile)
+            return [_deserialize_detail(row) for row in reader]
+    # def get_all(self) -> FullAds:
+    #     return [_get_ad('11'), _get_ad('22'), _get_ad('1144'), _get_ad('1199'), ]
 
 
 class ViewsRepoCsv(ViewsRepo):

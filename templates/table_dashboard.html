@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Object List{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2>Items Log</h2>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table role="grid">
+            <thead>
+                <tr>
+                    <th scope="col">№</th>
+                    <th scope="col">Tag</th>
+                    <th scope="col">Заголовок</th>
+                    <th scope="col">Когда узнали</th>
+                    <th scope="col">Ссылка</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                {% include 'partials/table_rows.html' %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

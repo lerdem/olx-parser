@@ -1,0 +1,25 @@
+{% for ad in ads %}
+<tr id="row-{{ ad.id }}">
+    <td>{{ loop.index }}</td>
+    <td>{{ ad.tag }}</td>
+    <!-- include td -->
+    {% include 'partials/title_cell.html' %}
+    <td>
+        <!-- {#<mark class="{{ 'success' if ad.status == 'Active' else 'secondary' }}">#} -->
+    <div>{{ ad.parse_date.strftime('%d.%m.%y') }}</div>
+    <small style="color: #666; font-size: 0.8rem;">
+        {{ ad.parse_date.strftime('%I:%M %p') }}
+    </small>
+        <!-- </mark> -->
+    </td>
+    <td>
+        <a href="{{ ad.url }}">ссылка ОЛХ</a>
+    </td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="5" style="text-align: center">
+        No objects found.
+    </td>
+</tr>
+{% endfor %}
