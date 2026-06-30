@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   app:
     build:
@@ -9,12 +10,32 @@ services:
     environment:
       - REQUESTS_CA_BUNDLE=/usr/local/lib/python3.9/site-packages/certifi/cacert.pem
     command: /bin/sh entrypoint.sh
+
   proxy:
     build:
       context: nginx
     container_name: olx-nginx
     restart: always
     ports:
-      - 12345:80
+      - "80:80"          # Needed for Let's Encrypt validation
+      - "12345:12345"    # Keeps your custom port mapping clean and direct
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - webroot:/var/www/html
     depends_on:
       - app
+
+  certbot:
+    image: certbot/certbot
+    container_name: olx-certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - webroot:/var/www/html
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+volumes:
+  certbot-etc:
+  certbot-var:
+  webroot:
