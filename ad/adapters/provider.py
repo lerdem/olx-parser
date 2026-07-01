@@ -24,14 +24,7 @@ class _CreateProviderOlx1(CreateAdsProvider):
         if is_empty_search:
             return []
 
-        # HOT fix not enough values to unpack (expected at least 1, got 0)
-        # maybe is_empty_search part redurant
         results = dom.xpath('.//div[contains(@data-testid, "listing-grid")]')
-
-        if not results:
-            with open('debug_page.html', 'w', encoding='utf-8') as f:
-                f.write(html)
-            return []
 
         # ipdb > rr, *hh = [0, 3]
         # ipdb > rr, hh
@@ -43,7 +36,13 @@ class _CreateProviderOlx1(CreateAdsProvider):
         # ipdb > rr, hh
         # (0, [3, 4])
         # поиск по району, *Подивіться результати для більшої відстані
-        search_area, *larger_than_search_area = results
+        try:
+            search_area, *larger_than_search_area = results
+        except ValueError: #not enough values to unpack (expected at least 1, got 0)
+            with open('debug_page.html', 'w', encoding='utf-8') as f:
+                f.write(html)
+            raise AdapterError('Ничего нет в листинге')
+
         return [
             self._wraped_process_item(item)
             for item in search_area.xpath('.//div[contains(@data-cy, "l-card")]')
