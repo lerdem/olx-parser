@@ -28,6 +28,11 @@ class _CreateProviderOlx1(CreateAdsProvider):
         # maybe is_empty_search part redurant
         results = dom.xpath('.//div[contains(@data-testid, "listing-grid")]')
 
+        if not results:
+            with open('debug_page.html', 'w', encoding='utf-8') as f:
+                f.write(html)
+            return []
+
         # ipdb > rr, *hh = [0, 3]
         # ipdb > rr, hh
         # (0, [3])
