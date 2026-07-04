@@ -2,7 +2,7 @@ import pickle
 from contextlib import contextmanager
 from os.path import join, exists
 from pathlib import Path
-from typing import List, Tuple, Dict, Type
+from typing import List, Tuple, Dict, Type, Iterator, Any
 from lxml import etree
 import lxml.etree as ET
 from requests import Session, HTTPError, ConnectionError
@@ -19,7 +19,7 @@ class _CreateProviderOlx1(CreateAdsProvider):
     @log_function_call
     def get_raw(self, start_url) -> List[Tuple]:
         html = _get_olx_search_html(start_url)
-        dom = etree.HTML(html)
+        dom: Any = etree.HTML(html)
         is_empty_search = len(dom.xpath('//div[contains(@class, "emptynew")]')) == 1
         if is_empty_search:
             return []
@@ -49,14 +49,14 @@ class _CreateProviderOlx1(CreateAdsProvider):
         ]
 
     @staticmethod
-    def _process_item(item):
+    def _process_item(item: Any) -> Tuple[str, str, str]:
         title = item.xpath('.//div[contains(@data-cy, "ad-card-title")]//h4/text()')[0]
         default_link = 'https://www.olx.ua'
         link = default_link + item.xpath('.//a/@href')[0]
         dirty_price = item.xpath('.//p[@data-testid="ad-price"]/text()')[0] # '6 000 грн.'
         return title, dirty_price, link
 
-    def _wraped_process_item(self, item):
+    def _wraped_process_item(self, item: Any) -> Tuple[str, str, str]:
         try:
             data = self._process_item(item)
         except Exception as e:
@@ -70,7 +70,7 @@ class _CreateProviderOlx1(CreateAdsProvider):
     def _restore():
         with open('item.pkl', 'rb') as f:
             item = ET.fromstring(pickle.load(f))
-            import ipdb
+            import ipdb # type: ignore
 
             ipdb.set_trace()
 
@@ -80,7 +80,7 @@ class _CreateProviderOlx2(CreateAdsProvider):
 
     def get_raw(self, start_url) -> List[Tuple]:
         html = _get_olx_search_html(start_url)
-        dom = etree.HTML(html)
+        dom: Any = etree.HTML(html)
         is_empty_search = len(dom.xpath('//div[contains(@class, "emptynew")]')) == 1
         if is_empty_search:
             return []
@@ -90,7 +90,7 @@ class _CreateProviderOlx2(CreateAdsProvider):
         ]
 
     @staticmethod
-    def _process_item(item):
+    def _process_item(item: Any):
         title = item.xpath('.//strong/text()')[0]
         link = item.xpath('.//a/@href')[0]
         dirty_price = item.xpath('.//p[@class="price"]/strong/text()')[0]
@@ -101,7 +101,7 @@ class _CreateProviderOlx3(_CreateProviderOlx2):
     _example_url = 'https://www.olx.ua/rabota/buhgalteriya/dnepr/?search%5Bfilter_enum_job_type%5D%5B0%5D=perm'
 
     @staticmethod
-    def _process_item(item):
+    def _process_item(item: Any):
         title = item.xpath('.//strong/text()')[0]
         link = item.xpath('.//a/@href')[0]
         try:
@@ -139,7 +139,7 @@ class CreateProviderOlx(CreateAdsProvider):
 class _BaseAdProviderOlx(DetailedAdProvider):
     def get_raw(self, external_url) -> Tuple[List, str, str, str]:
         html = _get_olx_search_html(external_url)
-        dom = etree.HTML(html)
+        dom: Any = etree.HTML(html)
         return (
             self.get_images(dom),
             self.get_ad_id(dom),
@@ -204,7 +204,7 @@ _mapper_detail: Dict[str, Type[DetailedAdProvider]] = {
 
 
 class DetailedAdProviderOlx(DetailedAdProvider):
-    def get_raw(self, external_url) -> List[Tuple]:
+    def get_raw(self, external_url) -> Tuple[List, str, str, str]:
         _provider_klass = _get_provider_klass(external_url, _mapper_detail)
         return _provider_klass().get_raw(external_url)
 
@@ -213,12 +213,12 @@ _BASE_DIR = Path(__file__).resolve(strict=True).parent
 
 
 @contextmanager
-def get_session() -> Session:
+def get_session() -> Iterator[Session]:
     _path = join(_BASE_DIR, 'session.pickle')
     if not exists(_path):
         s = Session()
     else:
-        s: Session = pickle.load(open(_path, 'rb'))
+        s = pickle.load(open(_path, 'rb'))
     try:
         yield s
     finally:

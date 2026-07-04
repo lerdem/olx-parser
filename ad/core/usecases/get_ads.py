@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from functools import partial
 from typing import List, Optional
 
+from ad.core.entities import DetailedAd
 from ad.core.adapters import Presenter
 from ad.core.adapters.repository import GetDetailedAdRepo
 
@@ -13,7 +14,7 @@ class GetAdsUseCase:
     _presenter: Presenter
 
     def execute(self, tag: Optional[str], stop_words: List[str]):
-        ads = self._repo.get_by_tag(tag) if tag is not None else self._repo.get_all()
+        ads: List[DetailedAd] = self._repo.get_by_tag(tag) if tag is not None else self._repo.get_all()
         if stop_words:
             ads = self._exclude_stop_words_from_ads(stop_words, ads)
         last_30_ads = sorted(ads, key=lambda x: x.parse_date, reverse=True)[:30]

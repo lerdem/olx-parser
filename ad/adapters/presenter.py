@@ -3,12 +3,12 @@ import ipaddress
 from typing import List
 
 from jinja2 import Environment, FileSystemLoader
-from premailer import transform
-from rfeed import Feed, Item, Guid
+from premailer import transform # type: ignore[import-untyped]
+from rfeed import Feed, Item, Guid # type: ignore[import-untyped]
 
 from ad.adapters.utils import get_config
 from ad.core.adapters import Presenter
-from ad.core.entities import BaseAds, DetailedAds, FullAd, BaseAd
+from ad.core.entities import DetailedAds, FullAd, BaseAd, DetailedAd
 from ad.core.errors import AdapterError
 
 _BASE_TEXT = 'RSS feed parsed from Olx'
@@ -58,7 +58,7 @@ class DetailedAdFeedPresenter(Presenter):
 
 
 class BaseAdTelegramPresenter(Presenter):
-    def present(self, ads: BaseAds) -> List[str]:
+    def present(self, ads: List[BaseAd]) -> List[str]:
         return [self._ad_to_html(ad) for ad in ads]
 
     @staticmethod
@@ -73,7 +73,7 @@ class DetailedAdDashboardPresenter(Presenter):
         return _get_table(ads)
 
 
-def _get_detail(ad: FullAd) -> str:
+def _get_detail(ad: DetailedAd) -> str:
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader)
     template = env.get_template('description.html')

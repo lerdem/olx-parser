@@ -1,12 +1,13 @@
 import unittest
 from unittest.mock import create_autospec
+from typing import List
 
 import hypothesis.strategies as st
 from hypothesis import given, example, assume, settings, HealthCheck
 
 from ad.core.adapters import Presenter
 from ad.core.adapters.repository import GetDetailedAdRepo
-from ad.core.entities import BaseAds
+from ad.core.entities import BaseAd
 from ad.core.tests.strategies import DetailedAdSt
 from ad.core.usecases.get_ads import GetAdsUseCase, _stop_word_ignore
 
@@ -24,7 +25,7 @@ class TestGetAdsUseCase(unittest.TestCase):
 
         get_ads = GetAdsUseCase(_repo=self.ads_repo, _presenter=self.presenter)
         get_ads.execute(tag=None, stop_words=[])
-        presenter_call_arg: BaseAds = self.presenter.present.call_args_list[0][0][0]
+        presenter_call_arg: List[BaseAd] = self.presenter.present.call_args_list[0][0][0]
         self.assertEqual(len(presenter_call_arg), len(return_repo))
 
     @example(

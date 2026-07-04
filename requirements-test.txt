@@ -1,3 +1,6 @@
 ipdb
 deal
 hypothesis
+types-pytz
+types-punq
+mypy

@@ -1,3 +1,4 @@
+# type: ignore
 from diagrams import Cluster, Diagram
 from diagrams.custom import Custom
 from diagrams.onprem.compute import Server

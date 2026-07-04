@@ -4,7 +4,10 @@ import os
 from itertools import chain
 from typing import Dict, List
 from telegram import Bot
-from telegram.bot import InvalidToken
+try:
+    from telegram.bot import InvalidToken # type: ignore
+except ModuleNotFoundError:
+    from telegram.error import InvalidToken
 
 from ad.adapters.utils import get_config, BASE_DIR
 from ad.core.adapters.repository import (
@@ -18,12 +21,11 @@ from ad.core.adapters.repository import (
     GetDetailedAdRepo,
 )
 from ad.core.entities import (
-    BaseAds,
     BaseAd,
     FullAd,
     DetailedAd,
     DetailedAds,
-    AnyAds,
+    AnyAd,
     FullAds,
     Views,
     View,
@@ -57,14 +59,14 @@ def _migrate():
 
 
 class CreateAdsRepoCsv(CreateAdsRepo):
-    def save(self, base_ads: BaseAds) -> None:
+    def save(self, base_ads: List[BaseAd]) -> None:
         with open(_BASE_FILE_NAME, 'a', newline='') as csvfile:
             fieldnames = BaseAd.__fields__.keys()
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             for ad in base_ads:
                 writer.writerow(ad.dict())
 
-    def get_all(self) -> BaseAds:
+    def get_all(self) -> List[BaseAd]:
         with open(_BASE_FILE_NAME) as csvfile:
             reader = csv.DictReader(csvfile)
             return [BaseAd(**row) for row in reader]
@@ -97,7 +99,7 @@ class DetailedAdRepoCsv(DetailedAdRepo):
             return [_deserialize_detail(row) for row in reader]
 
     @staticmethod
-    def get_all_base() -> BaseAds:
+    def get_all_base() -> List[BaseAd]:
         return CreateAdsRepoCsv().get_all()
 
     def get_base_ad_by_id(self, id: str) -> BaseAd:
@@ -132,14 +134,14 @@ def _deserialize_urls(raw: str):
 
 
 class DetailedAdGetRepoCsv(GetDetailedAdRepo):
-    def get_all(self) -> DetailedAds:
+    def get_all(self) -> List[DetailedAd]:
         return DetailedAdRepoCsv().get_all_detail()
 
-    def get_by_tag(self, tag: str) -> DetailedAds:
+    def get_by_tag(self, tag: str) -> List[DetailedAd]:
         return _filter_by_tag(tag, self.get_all())
 
 
-def _filter_by_tag(tag, items: AnyAds) -> AnyAds:
+def _filter_by_tag(tag: str, items: List[AnyAd]) -> List[AnyAd]:
     return [ad for ad in items if ad.tag == tag]
 
 
@@ -171,10 +173,10 @@ def _get_ad(random_id: str) -> FullAd:
     )
 
 class GetDebugRepo(GetDetailedAdRepo):
-    def get_all(self) -> FullAds:
+    def get_all(self) -> List[FullAd]: # type: ignore
         return [_get_ad('bc516e2abb5445ae9d03128a7a911f8f')]
 
-    def get_by_tag(self, tag: str) -> DetailedAds:
+    def get_by_tag(self, tag: str) -> List[FullAd]: # type: ignore
         return _filter_by_tag(tag, self.get_all())
 
 

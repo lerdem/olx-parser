@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Union
+from typing import List, Union, TypeVar
 from pydantic import BaseModel, HttpUrl
 
 
@@ -36,8 +36,7 @@ class View(BaseModel):
     id: str
 
 
-BaseAds = List[BaseAd]
 DetailedAds = List[DetailedAd]
-AnyAds = Union[DetailedAds, FullAd]
 FullAds = List[FullAd]
+AnyAd = TypeVar('AnyAd', bound=DetailedAd)
 Views = List[View]

@@ -4,9 +4,17 @@ from random import randint
 import punq
 
 from ad.adapters.presenter import BaseAdTelegramPresenter
-from ad.adapters.repository import TelegramSender, ViewsRepoCsv, DetailedAdGetRepoCsv
+from ad.adapters.repository import (
+    TelegramSender,
+    ViewsRepoCsv,
+    DetailedAdGetRepoCsv
+)
 from ad.core.adapters import Presenter
-from ad.core.adapters.repository import ViewsRepo, Sender, GetDetailedAdRepo
+from ad.core.adapters.repository import (
+    ViewsRepo,
+    Sender,
+    GetDetailedAdRepo
+)
 from ad.core.errors import UseCaseError
 from ad.core.usecases.ads_sender import AdsSenderUseCase
 from ad.logger import logger
@@ -34,9 +42,9 @@ if __name__ == '__main__':
     container.register(Presenter, BaseAdTelegramPresenter)
     container.register(AdsSenderUseCase)
     try:
-        _ads_sender = container.resolve(AdsSenderUseCase)
+        _ads_sender_usecase = container.resolve(AdsSenderUseCase)
     except UseCaseError as e:
         logger.error(e)
     else:
-        _ads_sender = _ads_sender.execute
+        _ads_sender = _ads_sender_usecase.execute
         _telegram_sender_job()

@@ -59,6 +59,8 @@ def update_ad_title(item_id):
     from ad.adapters.repository import GetTableDebugRepo
     ads = GetTableDebugRepo().get_all_detail()
     ad = next((ad for ad in ads if ad.id == item_id), None)
+    if ad is None:
+        return "Объявление не найдено", 404
     # Get the new name from the form data
     new_name = request.form.get('title', '').strip()
 
