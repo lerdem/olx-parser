@@ -41,6 +41,7 @@ class CreateAdsUseCase:
                 title=f'{item[0]} - {item[1]}',
                 parse_date=datetime.now(pytz.utc),
                 url=item[2],
+                is_active=True
             )
             for item in raw
         ]

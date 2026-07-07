@@ -1,19 +1,28 @@
+import os
 import punq
 
 from ad.adapters.presenter import (
     DetailedAdFeedPresenter,
     DetailedAdDashboardPresenter,
 )
-from ad.adapters.provider import DetailedAdProviderOlx, CreateProviderOlx
+from ad.adapters.provider import (
+    DetailedAdProviderOlx,
+    CreateProviderOlx,
+    AvalabilityProviderOlx,
+)
 from ad.adapters.repository import (
-    DetailedAdGetRepoCsv,
-    DetailedAdRepoCsv,
-    CreateAdsRepoCsv,
+    DetailedAdRepoSqlite,
+    CreateAdsRepoSqlite,
     CreateAdsConfigJson,
     GetDebugRepo,
+    GetTableDebugRepo,
 )
 from ad.core.adapters import Presenter
-from ad.core.adapters.provider import CreateAdsProvider, DetailedAdProvider
+from ad.core.adapters.provider import (
+    CreateAdsProvider,
+    DetailedAdProvider,
+    AvalabilityProvider,
+)
 from ad.core.adapters.repository import (
     CreateAdsRepo,
     CreateAdsConfig,
@@ -21,37 +30,69 @@ from ad.core.adapters.repository import (
     GetDetailedAdRepo,
 )
 from ad.core.usecases.create_base_ads import CreateAdsUseCase
-from ad.core.usecases.create_detail_ad import CreateDetailedAdUseCase
+from ad.core.usecases.create_detail_ad import (
+    CreateDetailedAdUseCase,
+    UploadDetailedAdsUseCase,
+    DeactivationDetailedAdsUseCase,
+)
 from ad.core.usecases.get_ads import GetAdsUseCase
 
+IS_DEBUG = os.getenv("APP_ENV", "production").lower() == "debug"
+
 container = punq.Container()
-container.register(CreateAdsRepo, CreateAdsRepoCsv)
-container.register(CreateAdsProvider, CreateProviderOlx)
+
+
+if IS_DEBUG:
+    container.register(GetDetailedAdRepo, GetDebugRepo)
+    print('DEGUG enabled')
+else:
+    container.register(GetDetailedAdRepo, DetailedAdRepoSqlite)
+
+# REPOS
+container.register(CreateAdsRepo, CreateAdsRepoSqlite)
+container.register(DetailedAdRepo, DetailedAdRepoSqlite)
 container.register(CreateAdsConfig, CreateAdsConfigJson)
+
+#PROVIDERS
+container.register(CreateAdsProvider, CreateProviderOlx)
+container.register(DetailedAdProvider, DetailedAdProviderOlx)
+container.register(AvalabilityProvider, AvalabilityProviderOlx)
+
+# #PRESENTERS
+container.register(DetailedAdFeedPresenter)
+container.register(DetailedAdDashboardPresenter)
+_shared_repo = container.resolve(GetDetailedAdRepo)
+_feed_presenter = container.resolve(DetailedAdFeedPresenter)
+_dashboard_presenter = container.resolve(DetailedAdDashboardPresenter)
+
 container.register(CreateAdsUseCase)
 ads_creator = container.resolve(CreateAdsUseCase)
 
-container.register(DetailedAdRepo, DetailedAdRepoCsv)
-container.register(DetailedAdProvider, DetailedAdProviderOlx)
 container.register(CreateDetailedAdUseCase)
 ad_detail_uploader = container.resolve(CreateDetailedAdUseCase)
 
-container.register(GetDetailedAdRepo, DetailedAdGetRepoCsv)
-container.register(Presenter, DetailedAdFeedPresenter)
-container.register(GetAdsUseCase)
-_get_ads_usecase = container.resolve(GetAdsUseCase)
-get_detail_ads = _get_ads_usecase.execute
+container.register(UploadDetailedAdsUseCase)
+_upload_detailed_ads = container.resolve(UploadDetailedAdsUseCase)
+bulk_update_missed_detail_ads = _upload_detailed_ads
 
-container3 = punq.Container()
-container3.register(GetDetailedAdRepo, GetDebugRepo)
-container3.register(Presenter, DetailedAdFeedPresenter)
-container3.register(GetAdsUseCase)
-_get_ads_debug_usecase = container3.resolve(GetAdsUseCase)
+container.register(DeactivationDetailedAdsUseCase)
+bulk_ads_deactivation = container.resolve(DeactivationDetailedAdsUseCase)
+
+
+_feed_usecase = GetAdsUseCase(
+    _repo=_shared_repo,
+    _presenter=_feed_presenter,
+)
+get_detail_ads = _feed_usecase.execute
+
+_get_ads_debug_usecase = GetAdsUseCase(
+    _repo=_shared_repo,
+    _presenter=_feed_presenter,
+)
 get_full_ads_debug = _get_ads_debug_usecase.execute
 
-container4 = punq.Container()
-container4.register(GetDetailedAdRepo, DetailedAdGetRepoCsv)
-container4.register(Presenter, DetailedAdDashboardPresenter)
-container4.register(GetAdsUseCase)
-_get_ads_usecase = container4.resolve(GetAdsUseCase)
-get_dashboard_detail_ads = _get_ads_usecase.execute
+_dashboard_usecase = GetAdsUseCase(
+    _repo=_shared_repo,
+    _presenter=_dashboard_presenter,
+)
+get_dashboard_detail_ads = _dashboard_usecase.execute

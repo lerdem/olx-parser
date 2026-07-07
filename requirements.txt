@@ -8,6 +8,8 @@ gunicorn==21.2.0
 punq==0.7.0
 python-telegram-bot==11.1.0
 premailer~=3.10.0
+sqlitedict==2.1.0
+dateparser~=1.4.1
 
 # to fix flask dependency
 # https://stackoverflow.com/questions/77213053/why-did-flask-start-failing-with-importerror-cannot-import-name-url-quote-fr

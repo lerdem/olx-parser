@@ -1,6 +1,7 @@
-import datetime
+from datetime import datetime, timezone
 import ipaddress
 from typing import List
+from zoneinfo import ZoneInfo
 
 from jinja2 import Environment, FileSystemLoader
 from premailer import transform # type: ignore[import-untyped]
@@ -8,7 +9,7 @@ from rfeed import Feed, Item, Guid # type: ignore[import-untyped]
 
 from ad.adapters.utils import get_config
 from ad.core.adapters import Presenter
-from ad.core.entities import DetailedAds, FullAd, BaseAd, DetailedAd
+from ad.core.entities import BaseAd, DetailedAd
 from ad.core.errors import AdapterError
 
 _BASE_TEXT = 'RSS feed parsed from Olx'
@@ -19,7 +20,7 @@ class DetailedAdFeedPresenter(Presenter):
         self._port: int = 12345
         self._host_ip: str = self._get_host_ip()
 
-    def present(self, ads: DetailedAds):
+    def present(self, ads: List[DetailedAd]):
         items = []
         for ad in ads:
             item = Item(
@@ -39,7 +40,7 @@ class DetailedAdFeedPresenter(Presenter):
             link=f'http://{self._host_ip}:{self._port}/detail-rss',
             description=description,
             language='ru-Ru',
-            lastBuildDate=datetime.datetime.now(),
+            lastBuildDate=datetime.now(),
             items=items,
         )
         return feed.rss()
@@ -69,7 +70,7 @@ class BaseAdTelegramPresenter(Presenter):
 
 class DetailedAdDashboardPresenter(Presenter):
 
-    def present(self, ads: DetailedAds):
+    def present(self, ads: List[DetailedAd]):
         return _get_table(ads)
 
 
@@ -82,9 +83,31 @@ def _get_detail(ad: DetailedAd) -> str:
     return inline_html
 
 
-def _get_table(ads: DetailedAds) -> str:
+
+def format_for_ui(utc_dt: datetime) -> datetime:
+    """Converts a UTC datetime object into a human-readable string
+    localized to Europe/Kyiv time."""
+    # 2. Convert the UTC datetime to Kyiv timezone
+    kyiv_tz = ZoneInfo("Europe/Kyiv")
+    kyiv_dt = utc_dt.astimezone(kyiv_tz)
+    # 3. Format it beautifully for your Telegram/UI string
+    # %Y-%m-%d %H:%M:%S -> "2026-07-04 16:12:00"
+    return kyiv_dt
+
+
+def get_date(d: datetime):
+    return format_for_ui(d).strftime("%d.%m.%y")
+
+
+def get_time(d: datetime):
+    return format_for_ui(d).strftime("%H:%M")
+
+
+def _get_table(ads: List[DetailedAd]) -> str:
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader)
+    env.filters["get_date"] = get_date
+    env.filters["get_time"] = get_time
     template = env.get_template('table_dashboard.html')
     html = template.render(ads=ads)
     inline_html = transform(html)

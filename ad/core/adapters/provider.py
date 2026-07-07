@@ -1,3 +1,4 @@
+from datetime import datetime
 from abc import ABC, abstractmethod
 from typing import List, Tuple
 
@@ -12,11 +13,11 @@ class DetailedAdProvider(ABC):
     @abstractmethod
     def get_raw(
         self, external_url
-    ) -> Tuple[List, str, str, str]:  # or raises AdapterError
+    ) -> Tuple[List, str, str, str, datetime, int]:  # or raises AdapterError
         pass
 
 
-class PhoneProvider(ABC):
+class AvalabilityProvider(ABC):
     @abstractmethod
-    def get_raw(self, external_id) -> str:  # or raises AdapterError
+    def is_available(self, external_url) -> bool:
         pass

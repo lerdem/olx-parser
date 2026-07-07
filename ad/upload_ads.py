@@ -1,3 +1,4 @@
+import sys
 from time import sleep
 from random import randint
 
@@ -9,7 +10,7 @@ from ad.logger import logger
 def _upload_job():
     logger.debug('uploader started')
     while True:
-        time_to_wait = randint(45, 120)
+        time_to_wait = randint(30, 60)
         logger.debug(f'waiting before upload from olx {time_to_wait} seconds')
         sleep(time_to_wait)
         try:
@@ -26,4 +27,8 @@ def _upload_job():
 
 
 if __name__ == '__main__':
-    _upload_job()
+    try:
+        _upload_job()
+    except KeyboardInterrupt:
+        logger.debug("[!] Ctrl+C detected!")
+        sys.exit(0)

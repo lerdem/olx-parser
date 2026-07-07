@@ -13,12 +13,17 @@ class GetAdsUseCase:
     _repo: GetDetailedAdRepo
     _presenter: Presenter
 
-    def execute(self, tag: Optional[str], stop_words: List[str]):
+    def execute(
+        self,
+        tag: Optional[str],
+        stop_words: List[str],
+        max_num_ads_show: int = 30
+    ):
         ads: List[DetailedAd] = self._repo.get_by_tag(tag) if tag is not None else self._repo.get_all()
         if stop_words:
             ads = self._exclude_stop_words_from_ads(stop_words, ads)
-        last_30_ads = sorted(ads, key=lambda x: x.parse_date, reverse=True)[:30]
-        return self._presenter.present(last_30_ads)
+        last_ads = sorted(ads, key=lambda x: x.parse_date, reverse=True)[:max_num_ads_show]
+        return self._presenter.present(last_ads)
 
     @staticmethod
     def _exclude_stop_words_from_ads(stop_words, ads):

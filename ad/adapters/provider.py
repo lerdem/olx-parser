@@ -3,12 +3,20 @@ from contextlib import contextmanager
 from os.path import join, exists
 from pathlib import Path
 from typing import List, Tuple, Dict, Type, Iterator, Any
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+import dateparser
 from lxml import etree
 import lxml.etree as ET
 from requests import Session, HTTPError, ConnectionError
 from requests.exceptions import ChunkedEncodingError
 
-from ad.core.adapters.provider import CreateAdsProvider, DetailedAdProvider
+from ad.core.adapters.provider import (
+    CreateAdsProvider,
+    DetailedAdProvider,
+    AvalabilityProvider
+)
 from ad.core.errors import AdapterError
 from ad.logger import log_function_call
 
@@ -137,7 +145,7 @@ class CreateProviderOlx(CreateAdsProvider):
 
 
 class _BaseAdProviderOlx(DetailedAdProvider):
-    def get_raw(self, external_url) -> Tuple[List, str, str, str]:
+    def get_raw(self, external_url) -> Tuple[List, str, str, str, datetime, int]:
         html = _get_olx_search_html(external_url)
         dom: Any = etree.HTML(html)
         return (
@@ -145,6 +153,8 @@ class _BaseAdProviderOlx(DetailedAdProvider):
             self.get_ad_id(dom),
             self.get_description(dom),
             self.get_name(dom),
+            self.get_publication_date(dom),
+            self.get_view_count(dom),
         )
 
     def get_images(self, dom) -> List:
@@ -180,6 +190,27 @@ class _BaseAdProviderOlx(DetailedAdProvider):
         card = dom.xpath('.//div[contains(@data-cy, "seller_card")]')[0]
         return card.xpath('.//h4/text()')[0]
 
+    def get_publication_date(self, dom) -> datetime:
+        # parse_uk_date_to_utc
+        ukraine_tz = ZoneInfo("Europe/Kyiv")
+        now_in_ukraine = datetime.now(ukraine_tz)
+        settings = {
+            'RELATIVE_BASE': now_in_ukraine.replace(tzinfo=None), # Base relative calculations on UA time
+            'TIMEZONE': 'Europe/Kyiv',                            # Interpret the parsed string in UA timezone
+            'TO_TIMEZONE': 'Europe/Kyiv',                         # Ensure the output retains UA timezone
+            'RETURN_AS_TIMEZONE_AWARE': True
+        }
+        raw: Any = dom.xpath('.//span[contains(@data-cy, "ad-posted-at")]')[0]
+        # text returns ['Опубліковано ', 'сьогодні о 08:56']
+        raw_date: str = raw.xpath('text()')[-1]
+        when: datetime | None = dateparser.parse(raw_date, languages=['uk'], settings=settings)
+        if when is None:
+            raise AdapterError('Не удалось распарсить дату публикации')
+        return when.astimezone(ZoneInfo("UTC"))
+
+    def get_view_count(self, dom) -> int:
+        return 0
+
 
 class _DetailedAdRabotaProviderOlx(_BaseAdProviderOlx):
     def get_images(self, dom) -> List:
@@ -204,9 +235,21 @@ _mapper_detail: Dict[str, Type[DetailedAdProvider]] = {
 
 
 class DetailedAdProviderOlx(DetailedAdProvider):
-    def get_raw(self, external_url) -> Tuple[List, str, str, str]:
+    def get_raw(self, external_url) -> Tuple[List, str, str, str, datetime, int]:
         _provider_klass = _get_provider_klass(external_url, _mapper_detail)
         return _provider_klass().get_raw(external_url)
+
+
+class AvalabilityProviderOlx(AvalabilityProvider):
+
+    def is_available(self, external_url) -> bool:
+        try:
+            _code = _get_olx_status_code(external_url)
+        except AdapterError:
+            return True # suppose its avaible
+        if _code in (404, 410): # means OLX deactivate ad
+            return False
+        return True
 
 
 _BASE_DIR = Path(__file__).resolve(strict=True).parent
@@ -229,15 +272,15 @@ def _get_olx_search_html(url) -> str:  # or raises AdapterError
     with get_session() as session:
         return _get_olx_search_html_base(url, session)
 
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0',
+    'X-Client': 'DESKTOP',
+}
 
 def _get_olx_search_html_base(url, session: Session) -> str:  # or raises AdapterError
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0',
-        'Referer': url,
-        'X-Client': 'DESKTOP',
-    }
+    HEADERS['Referer'] = url
     try:
-        r = session.get(url, headers=headers)
+        r = session.get(url, headers=HEADERS)
     except ConnectionError as e:
         raise AdapterError(f'{e}, проблемы с подключение к интернету')
     except ChunkedEncodingError as e:
@@ -248,6 +291,23 @@ def _get_olx_search_html_base(url, session: Session) -> str:  # or raises Adapte
         return r.text
     except HTTPError as e:
         raise AdapterError(f'{e}, на этапе запроса к ОЛХ')
+
+
+def _get_olx_status_code(url) -> int:  # or raises AdapterError
+    with get_session() as session:
+        return _get_olx_404_base(url, session)
+
+
+def _get_olx_404_base(url, session: Session) -> int:  # or raises AdapterError
+    HEADERS['Referer'] = url
+    try:
+        r = session.head(url, headers=HEADERS, timeout=5)
+    except ConnectionError as e:
+        raise AdapterError(f'{e}, проблемы с подключение к интернету')
+    except ChunkedEncodingError as e:
+        raise AdapterError(f'{e}, невозможно прочитать ответ от ОЛХ')
+
+    return r.status_code
 
 
 if __name__ == '__main__':

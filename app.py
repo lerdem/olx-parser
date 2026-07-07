@@ -82,7 +82,9 @@ def update_ad_title(item_id):
 @app.route('/dashboard_table_0f89d995ae58466cb8fc5fb042bb8263')
 def table_dashboard():
     data = get_dashboard_detail_ads(
-        tag=request.args.get('tag'), stop_words=request.args.getlist('sw')
+        tag=request.args.get('tag'),
+        stop_words=request.args.getlist('sw'),
+        max_num_ads_show=100
     )
     return Response(data, headers={'Content-Type': 'text/html; charset=UTF-8'})
 

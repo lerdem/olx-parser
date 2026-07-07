@@ -2,12 +2,14 @@ import configparser
 import csv
 import os
 from itertools import chain
+from functools import partial
 from typing import Dict, List
 from telegram import Bot
 try:
     from telegram.bot import InvalidToken # type: ignore
 except ModuleNotFoundError:
     from telegram.error import InvalidToken
+from sqlitedict import SqliteDict # type: ignore [import-untyped]
 
 from ad.adapters.utils import get_config, BASE_DIR
 from ad.core.adapters.repository import (
@@ -22,139 +24,82 @@ from ad.core.adapters.repository import (
 )
 from ad.core.entities import (
     BaseAd,
-    FullAd,
     DetailedAd,
-    DetailedAds,
     AnyAd,
-    FullAds,
     Views,
     View,
 )
 from ad.core.errors import AdapterError
 
-_BASE_FILE_NAME = BASE_DIR.joinpath('.base-ads.csv')
-_DETAIL_FILE_NAME = BASE_DIR.joinpath('.detail-ads.csv')
-_FULL_FILE_NAME = BASE_DIR.joinpath('.full-ads.csv')
-_VIEWS_FILE_NAME = BASE_DIR.joinpath('.ad-views.csv')
-
-_file_field_map = {
-    _BASE_FILE_NAME: BaseAd.__fields__.keys(),
-    _DETAIL_FILE_NAME: DetailedAd.__fields__.keys(),
-    _FULL_FILE_NAME: FullAd.__fields__.keys(),
-    _VIEWS_FILE_NAME: View.__fields__.keys(),
-}
+_DB_PATH = BASE_DIR.joinpath('storage.sqlite')
 
 
-def _init_storage(file_name, fields):
-    if not os.path.exists(file_name):
-        with open(file_name, 'w', newline='') as csvfile:
-            fieldnames = fields
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
+def get_table(table_name: str) -> SqliteDict:
+    """Helper to return a thread-safe dict-like connection to SQLite.
+    autocommit=True makes sure writes are instantly persistent."""
+    return SqliteDict(_DB_PATH, tablename=table_name, autocommit=True)
 
 
-def _migrate():
-    for file_name, fields in _file_field_map.items():
-        _init_storage(file_name, fields)
-
-
-class CreateAdsRepoCsv(CreateAdsRepo):
-    def save(self, base_ads: List[BaseAd]) -> None:
-        with open(_BASE_FILE_NAME, 'a', newline='') as csvfile:
-            fieldnames = BaseAd.__fields__.keys()
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            for ad in base_ads:
-                writer.writerow(ad.dict())
-
-    def get_all(self) -> List[BaseAd]:
-        with open(_BASE_FILE_NAME) as csvfile:
-            reader = csv.DictReader(csvfile)
-            return [BaseAd(**row) for row in reader]
-
-
-class DetailedAdRepoCsv(DetailedAdRepo):
-    def save(self, detailed_ad: DetailedAd) -> None:
-        saved = self.get_all_detail()
-        with open(_DETAIL_FILE_NAME, 'w', newline='') as csvfile:
-            fieldnames = DetailedAd.__fields__.keys()
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            for ad in self._mix_existed_ads_and_one_new(saved, detailed_ad):
-                writer.writerow(_serialize_detail(ad))
-
-    @staticmethod
-    def _mix_existed_ads_and_one_new(
-        existed_ads: DetailedAds, new_or_updated_ad: DetailedAd
-    ):
-        existed_ads_without_new = filter(
-            lambda x: x.external_id != new_or_updated_ad.external_id, existed_ads
-        )
-        for ad in chain(existed_ads_without_new, [new_or_updated_ad]):
-            yield ad
-
-    @staticmethod
-    def get_all_detail() -> DetailedAds:
-        with open(_DETAIL_FILE_NAME) as csvfile:
-            reader = csv.DictReader(csvfile)
-            return [_deserialize_detail(row) for row in reader]
-
-    @staticmethod
-    def get_all_base() -> List[BaseAd]:
-        return CreateAdsRepoCsv().get_all()
-
-    def get_base_ad_by_id(self, id: str) -> BaseAd:
-        try:
-            return [x for x in self.get_all_base() if x.id == id][0]
-        except IndexError:
-            raise AdapterError(f'Не найдено объявление {id}')
-
-
-def _serialize_detail(ad: DetailedAd) -> Dict:
-    data = ad.dict()
-    urls = _serialize_urls(data.pop('image_urls'))
-    data['image_urls'] = urls
-    return data
-
-
-def _deserialize_detail(row: Dict) -> DetailedAd:
-    raw = row.pop('image_urls')
-    urls = _deserialize_urls(raw)
-    row['image_urls'] = urls
-    return DetailedAd(**row)
-
-
-def _serialize_urls(urls):
-    return ','.join(urls)
-
-
-def _deserialize_urls(raw: str):
-    if not raw:
-        return []
-    return raw.split(',')
-
-
-class DetailedAdGetRepoCsv(GetDetailedAdRepo):
-    def get_all(self) -> List[DetailedAd]:
-        return DetailedAdRepoCsv().get_all_detail()
-
-    def get_by_tag(self, tag: str) -> List[DetailedAd]:
-        return _filter_by_tag(tag, self.get_all())
+get_ads_table = partial(get_table, 'ads')
 
 
 def _filter_by_tag(tag: str, items: List[AnyAd]) -> List[AnyAd]:
     return [ad for ad in items if ad.tag == tag]
+
+class CreateAdsRepoSqlite(CreateAdsRepo):
+    # --- CreateAdsRepo Interface ---
+    def save(self, base_ads: List[BaseAd]) -> None:
+        with get_ads_table() as db:
+            for ad in base_ads:
+                if ad.id in db:
+                    existing = db[ad.id]
+                    existing.update(ad.dict(exclude_unset=True))
+                    db[ad.id] = existing
+                else:
+                    db[ad.id] = ad.dict()
+
+    def get_all(self) -> List[BaseAd]:
+        with get_ads_table() as db:
+            return [BaseAd(**row) for row in db.values()]
+
+
+class DetailedAdRepoSqlite(DetailedAdRepo, GetDetailedAdRepo):
+    # --- DetailedAdRepo Interface ---
+    def save_detail(self, detailed_ad: DetailedAd) -> None:
+        with get_ads_table() as db:
+            if detailed_ad.id in db:
+                # It exists! Fetch it safely with bracket notation
+                existing_data = db[detailed_ad.id]
+                existing_data.update(detailed_ad.dict(exclude_unset=True))
+                db[detailed_ad.id] = existing_data
+            else:
+                db[detailed_ad.id] = detailed_ad.dict()
+
+
+    def get_base_ad_by_id(self, id: str) -> BaseAd:
+        with get_ads_table() as db:
+            if id in db:
+                return BaseAd(**db[id])
+            raise AdapterError(f'Не найдено объявление {id}')
+
+    # --- GetDetailedAdRepo Interface ---
+    def get_all(self) -> List[DetailedAd]:
+        with get_ads_table() as db:
+            return [DetailedAd(**row) for row in db.values() if 'image_urls' in row]
+
+    def get_by_tag(self, tag: str) -> List[DetailedAd]:
+        return _filter_by_tag(tag, self.get_all())
 
 
 class CreateAdsConfigJson(CreateAdsConfig):
     def get_configuration(self) -> Configurations:
         return Configuration.parse_file('configuration.json').__root__
 
-def _get_ad(random_id: str) -> FullAd:
-    return FullAd(
+def _get_ad(random_id: str) -> DetailedAd:
+    return DetailedAd(
         id=random_id,  # dont show in template
         tag='arenda-dnepr',  # dont show in template
         title='Сдам 2-х комнатную квартиру на длительный период - Днепр',
-        publication_date='2021-11-04 12:58:45',  # dont show in template
         parse_date='2021-11-04 12:58:45',
         url='https://www.olx.ua/d/obyavlenie/sdam-2-h-komnatnuyu-kvartiru-na-dlitelnyy-period-IDN7dzO.html',
         description='Сдам 2-х комнатную квартиру на длительный период для семейной пары в районе '
@@ -170,44 +115,34 @@ def _get_ad(random_id: str) -> FullAd:
         external_id='725276749',
         name='Феликс',
         phone='+380995437751',
+        is_active=True,
+        view_cout=10,
+        publication_date='2021-11-04 11:58:45',
     )
 
 class GetDebugRepo(GetDetailedAdRepo):
-    def get_all(self) -> List[FullAd]: # type: ignore
+    def get_all(self) -> List[DetailedAd]:
         return [_get_ad('bc516e2abb5445ae9d03128a7a911f8f')]
 
-    def get_by_tag(self, tag: str) -> List[FullAd]: # type: ignore
+    def get_by_tag(self, tag: str) -> List[DetailedAd]:
         return _filter_by_tag(tag, self.get_all())
 
 
 class GetTableDebugRepo(GetDebugRepo):
-    def get_all_detail(self) -> DetailedAds:
-        with open(_DETAIL_FILE_NAME) as csvfile:
-            reader = csv.DictReader(csvfile)
-            return [_deserialize_detail(row) for row in reader]
-    # def get_all(self) -> FullAds:
-    #     return [_get_ad('11'), _get_ad('22'), _get_ad('1144'), _get_ad('1199'), ]
+
+    def get_all_detail(self) -> List[DetailedAd]:
+        return [_get_ad('11'), _get_ad('22'), _get_ad('1144'), _get_ad('1199'), ]
 
 
-class ViewsRepoCsv(ViewsRepo):
+class ViewsRepoSqlite(ViewsRepo):
     def get_views_by_ids(self, ad_ids: List[str]) -> Views:
-        # ad_ids = [0,1,2,3] views = [1,2] return [1,2]
-        with open(_VIEWS_FILE_NAME) as csvfile:
-            reader = csv.DictReader(csvfile)
-            all_ad_views = [View(**row) for row in reader]
-            all_ad_views_d = {view.id: view for view in all_ad_views}
-            viewed_ads_ids = set(ad_ids).intersection(set(all_ad_views_d.keys()))
-            return [
-                view
-                for view_id, view in all_ad_views_d.items()
-                if view_id in viewed_ads_ids
-            ]
+        with get_table('ad_views') as db:
+            # Direct lookup is O(1) instead of reading an entire file into memory!
+            return [View(**db[ad_id]) for ad_id in ad_ids if ad_id in db]
 
     def save_view(self, view: View) -> None:
-        with open(_VIEWS_FILE_NAME, 'a', newline='') as csvfile:
-            fieldnames = View.__fields__.keys()
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writerow(view.dict())
+        with get_table('ad_views') as db:
+            db[view.id] = view.dict()
 
 
 class TelegramSender(Sender):
@@ -241,7 +176,3 @@ class TelegramSender(Sender):
             return config.getint('secrets', 'CHAT_ID')
         except ValueError:
             raise AdapterError('телеграм CHAT_ID должен состоять из цифр')
-
-
-if __name__ == '__main__':
-    _migrate()

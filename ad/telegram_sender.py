@@ -6,8 +6,8 @@ import punq
 from ad.adapters.presenter import BaseAdTelegramPresenter
 from ad.adapters.repository import (
     TelegramSender,
-    ViewsRepoCsv,
-    DetailedAdGetRepoCsv
+    ViewsRepoSqlite,
+    DetailedAdRepoSqlite
 )
 from ad.core.adapters import Presenter
 from ad.core.adapters.repository import (
@@ -36,8 +36,8 @@ def _telegram_sender_job():
 
 if __name__ == '__main__':
     container = punq.Container()
-    container.register(GetDetailedAdRepo, DetailedAdGetRepoCsv)
-    container.register(ViewsRepo, ViewsRepoCsv)
+    container.register(GetDetailedAdRepo, DetailedAdRepoSqlite)
+    container.register(ViewsRepo, ViewsRepoSqlite)
     container.register(Sender, TelegramSender)
     container.register(Presenter, BaseAdTelegramPresenter)
     container.register(AdsSenderUseCase)

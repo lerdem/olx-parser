@@ -5,20 +5,34 @@
     <!-- include td -->
     {% include 'partials/title_cell.html' %}
     <td>
-        <!-- {#<mark class="{{ 'success' if ad.status == 'Active' else 'secondary' }}">#} -->
-    <div>{{ ad.parse_date.strftime('%d.%m.%y') }}</div>
-    <small style="color: #666; font-size: 0.8rem;">
-        {{ ad.parse_date.strftime('%I:%M %p') }}
-    </small>
-        <!-- </mark> -->
+        <div>{{ ad.parse_date | get_date }}</div>
+        <small style="color: #666; font-size: 0.8rem;">
+            {{ ad.parse_date | get_time }}
+        </small>
     </td>
     <td>
-        <a href="{{ ad.url }}">ссылка ОЛХ</a>
+        <div>{{ ad.publication_date | get_date }}</div>
+        <small style="color: #666; font-size: 0.8rem;">
+            {{ ad.publication_date | get_time }}
+        </small>
+    </td>
+    <td>
+        <div class="ad-status">
+            {% if ad.is_active %}
+                <span class="badge active" style="color: green;">●</span>
+            {% else %}
+                <span class="badge inactive" style="color: red;">○</span>
+            {% endif %}
+        </div>
+    </td>
+
+    <td>
+        <a href="{{ ad.url }}">ссылка</a>
     </td>
 </tr>
 {% else %}
 <tr>
-    <td colspan="5" style="text-align: center">
+    <td colspan="7" style="text-align: center">
         No objects found.
     </td>
 </tr>

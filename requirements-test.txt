@@ -3,4 +3,5 @@ deal
 hypothesis
 types-pytz
 types-punq
+types-dateparser
 mypy

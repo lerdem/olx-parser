@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Union, TypeVar
+from typing import List, Union, TypeVar, Optional
 from pydantic import BaseModel, HttpUrl
 
 
@@ -9,6 +9,8 @@ class BaseAd(BaseModel):
     title: str
     parse_date: datetime
     url: HttpUrl
+    is_active: bool
+# TODO is_active False create new BaseAd
 
 
 class _DetailAd(BaseModel):
@@ -17,18 +19,12 @@ class _DetailAd(BaseModel):
     external_id: str
     name: str
 
-
-class Contact(BaseModel):
-    # https://github.com/samuelcolvin/pydantic/issues/1551
-    phone: str
+    publication_date: datetime
+    view_cout: int
+    phone: Optional[str] = None
 
 
 class DetailedAd(_DetailAd, BaseAd):
-    pass
-
-
-class FullAd(Contact, DetailedAd):
-    # def serialize_fields(self):
     pass
 
 
@@ -36,7 +32,5 @@ class View(BaseModel):
     id: str
 
 
-DetailedAds = List[DetailedAd]
-FullAds = List[FullAd]
 AnyAd = TypeVar('AnyAd', bound=DetailedAd)
 Views = List[View]

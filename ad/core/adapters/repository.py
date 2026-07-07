@@ -7,7 +7,6 @@ from ad.core.entities import (
     BaseAd,
     Views,
     View,
-    DetailedAds,
     AnyAd,
 )
 
@@ -24,7 +23,7 @@ class CreateAdsRepo(ABC):
 
 class DetailedAdRepo(ABC):
     @abstractmethod
-    def save(self, detailed_ad: DetailedAd) -> None:
+    def save_detail(self, detailed_ad: DetailedAd) -> None:
         pass
 
     @abstractmethod
