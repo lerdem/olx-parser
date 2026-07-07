@@ -8,27 +8,31 @@ from ad.logger import logger
 
 
 def _upload_job():
-    logger.debug('uploader started')
+    logger.debug('UPLOADER: started')
     while True:
         time_to_wait = randint(30, 60)
-        logger.debug(f'waiting before upload from olx {time_to_wait} seconds')
+        logger.debug(
+            f'UPLOADER: waiting before upload from olx {time_to_wait} seconds'
+        )
         sleep(time_to_wait)
         try:
             new_ad_ids = ads_creator()
         except UseCaseError as e:
-            logger.error(e)
+            logger.error(f'UPLOADER: {e}')
         else:
-            logger.debug(f'Загружены ads: {new_ad_ids}')
+            logger.debug(f'UPLOADER: Загружены ads {new_ad_ids}')
             for _id in new_ad_ids:
                 try:
                     ad_detail_uploader(ad_id=_id)
                 except Exception as e:
-                    logger.error(f'Error with {_id}, {e}')
+                    logger.error(
+                        f'UPLOADER: Error with {_id}, {e}'
+                    )
 
 
 if __name__ == '__main__':
     try:
         _upload_job()
     except KeyboardInterrupt:
-        logger.debug("[!] Ctrl+C detected!")
+        logger.debug("UPLOADER: [!] Ctrl+C detected!")
         sys.exit(0)

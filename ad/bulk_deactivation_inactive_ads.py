@@ -27,5 +27,5 @@ if __name__ == '__main__':
     try:
         _deactivate_job()
     except KeyboardInterrupt:
-        logger.debug("[!] Ctrl+C detected!")
+        logger.debug("DEACTIVATOR: [!] Ctrl+C detected!")
         sys.exit(0)
