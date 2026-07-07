@@ -22,7 +22,7 @@ class GetAdsUseCase:
         ads: List[DetailedAd] = self._repo.get_by_tag(tag) if tag is not None else self._repo.get_all()
         if stop_words:
             ads = self._exclude_stop_words_from_ads(stop_words, ads)
-        last_ads = sorted(ads, key=lambda x: x.parse_date, reverse=True)[:max_num_ads_show]
+        last_ads = sorted(ads, key=lambda x: x.publication_date, reverse=True)[:max_num_ads_show]
         return self._presenter.present(last_ads)
 
     @staticmethod
