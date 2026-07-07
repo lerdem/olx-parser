@@ -5,10 +5,7 @@ from itertools import chain
 from functools import partial
 from typing import Dict, List
 from telegram import Bot
-try:
-    from telegram.bot import InvalidToken # type: ignore
-except ModuleNotFoundError:
-    from telegram.error import InvalidToken
+from telegram.error import InvalidToken
 from sqlitedict import SqliteDict # type: ignore [import-untyped]
 
 from ad.adapters.utils import get_config, BASE_DIR
