@@ -68,6 +68,8 @@ class DeactivationDetailedAdsUseCase:
         active_detailed_ads = [
             ad for ad in self._get_repo.get_all() if ad.is_active
         ]
+        # TODO temp solution. Have to make checking by baches
+        active_detailed_ads = sorted(active_detailed_ads, key=lambda x: x.publication_date, reverse=True)
         counter = 0
         for ad in active_detailed_ads:
             status = self._provider.is_available(ad.url)
