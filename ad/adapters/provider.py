@@ -1,3 +1,4 @@
+import os
 import pickle
 from contextlib import contextmanager
 from os.path import join, exists
@@ -61,7 +62,7 @@ class _CreateProviderOlx1(CreateAdsProvider):
         title = item.xpath('.//div[contains(@data-cy, "ad-card-title")]//h4/text()')[0]
         default_link = 'https://www.olx.ua'
         link = default_link + item.xpath('.//a/@href')[0]
-        dirty_price = item.xpath('.//p[@data-testid="ad-price"]/text()')[0] # '6 000 грн.'
+        dirty_price = item.xpath('.//p[@data-testid="ad-price"]/text()')[0]  # '6 000 грн.'
         return title, dirty_price, link
 
     def _wraped_process_item(self, item: Any) -> Tuple[str, str, str]:
@@ -258,14 +259,29 @@ _BASE_DIR = Path(__file__).resolve(strict=True).parent
 @contextmanager
 def get_session() -> Iterator[Session]:
     _path = join(_BASE_DIR, 'session.pickle')
-    if not exists(_path):
-        s = Session()
+    _tmp_path = join(_BASE_DIR, 'session.pickle.tmp')
+
+    # 1. Safe Load: Check if exists AND has data
+    if os.path.exists(_path) and os.path.getsize(_path) > 0:
+        try:
+            with open(_path, 'rb') as f:
+                s = pickle.load(f)
+        except Exception:
+            # If the file is corrupted anyway, fall back to a fresh session
+            s = Session()
     else:
-        s = pickle.load(open(_path, 'rb'))
+        s = Session()
+
     try:
         yield s
     finally:
-        pickle.dump(s, open(_path, 'wb'))
+        # 2. Safe Write: Write to a temporary file first
+        with open(_tmp_path, 'wb') as f:
+            pickle.dump(s, f)
+
+        # 3. Atomic Swap: Instantly replaces the old file. 
+        # Background processes will see either the old full file or the new full file, NEVER a 0-byte file.
+        os.replace(_tmp_path, _path)
 
 
 def _get_olx_search_html(url) -> str:  # or raises AdapterError
@@ -321,7 +337,9 @@ if __name__ == '__main__':
     # print(res[0])
     # detail_url = res[0][2]
     # print(detail_url)
-    # res = DetailedAdProviderOlx().get_raw('https://www.olx.ua/d/uk/obyavlenie/sdam-kvartiru-1-k-IDUv2pa.html')
+    # res = DetailedAdProviderOlx().get_raw('https://www.olx.ua/d/uk/obyavlenie/sdam-kvartiru-na-dlitelnyy-srok-ID10NIXy.html?isPreviewActive=0&search_reason=search%7Corganic&sliderIndex=0')
     # print(res)
     # docker exec -it olx-server python -m ad.adapters.provider
-    _CreateProviderOlx1._restore()
+    # _CreateProviderOlx1._restore()
+    external_url = 'https://www.olx.ua/d/uk/obyavlenie/zdam-odnokmnatnu-kvartiru-vul-lipinskogo-ID10NOXp.html?search_reason=search%7Corganic'
+    res = AvalabilityProviderOlx().is_available(external_url)
