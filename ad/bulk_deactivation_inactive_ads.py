@@ -7,20 +7,20 @@ from ad.logger import logger
 
 
 def _deactivate_job():
-    logger.debug('deactivator started')
+    logger.debug('DEACTIVATOR: started')
     while True:
         time_to_wait = randint(180, 240)
         logger.debug(
-            f'waiting {time_to_wait} seconds before check ads status')
+            f'DEACTIVATOR: waiting {time_to_wait} seconds before check ads status'
+        )
         sleep(time_to_wait)
         try:
             res = bulk_ads_deactivation()
         except Exception as e:
-            logger.error(f'Error with {e}')
+            logger.error(f'DEACTIVATOR: Error with {e}')
         else:
-            logger.debug(f'Деативировано: {res}')
-        logger.debug(f'deactivation circle done')
-
+            logger.debug(f'DEACTIVATOR: {res}')
+        logger.debug(f'DEACTIVATOR: circle done')
 
 
 if __name__ == '__main__':
