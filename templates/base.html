@@ -8,7 +8,18 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <style>
+        .table-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
 
+        table[role="grid"] th,
+        table[role="grid"] td {
+            padding: 6px 8px !important; /* Decreased from typical 12px-16px */
+            line-height: 1.3;            /* Keeps text tightly bound */
+        }
         /* Make editable cells look clickable on hover */
         td[hx-get] {
             transition: background-color 0.15s ease;
@@ -25,6 +36,96 @@
             padding: 4px 8px !important;
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
+
+        @media screen and (max-width: 768px) {
+            /* Hide the traditional table header */
+            table[role="grid"] thead {
+                display: none;
+            }
+
+            table[role="grid"],
+            table[role="grid"] tbody {
+                display: block;
+                width: 100%;
+            }
+
+            /* 1. Turn the row into a 2-column Grid */
+            table[role="grid"] tr {
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* Two equal columns */
+                gap: 0.25rem 0.75rem;            /* Tight row gap, comfortable column gap */
+                margin-bottom: 1rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                padding: 0.6rem;
+                background-color: #fff;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }
+
+            /* 2. Default cell behavior (fits nicely in its grid slot) */
+            table[role="grid"] td {
+                display: block;
+                width: 100%;
+                padding: 0.2rem 0;
+                text-align: left;
+                /* Remove the old bottom border since it's a grid now */
+                border-bottom: none;
+            }
+
+            /* 3. Force specific fields to stretch across BOTH columns (Full Width) */
+            /* Adjust these `:nth-child` indexes if your template layout sequence changes */
+            table[role="grid"] td:nth-child(3) {
+                grid-column: span 2; /* "Заголовок" takes full width */
+                border-bottom: 1px dashed #eee;
+                padding-bottom: 0.5rem;
+                margin-bottom: 0.2rem;
+            }
+
+            /* Add a subtle visual separator after the dates if you want */
+            table[role="grid"] td:nth-child(5) {
+                border-bottom: 1px dashed #eee;
+                padding-bottom: 0.5rem;
+                margin-bottom: 0.2rem;
+            }
+
+            /* Last child safety reset */
+            table[role="grid"] td:last-child {
+                border-bottom: none;
+            }
+
+            /* 4. Mini labels sitting right above values */
+            table[role="grid"] td::before {
+                content: attr(data-label);
+                display: block;
+                font-weight: bold;
+                font-size: 0.75rem;
+                color: #888;
+                margin-bottom: 0.05rem;
+            }
+
+            /* Fix the "No objects found" layout on mobile grid */
+            table[role="grid"] tr.empty-row {
+                display: block;
+            }
+            table[role="grid"] tr.empty-row td {
+                text-align: center !important;
+                padding: 2rem 1rem;
+            }
+            table[role="grid"] tr.empty-row td::before {
+                content: none;
+            }
+
+            .date-container {
+                text-align: left;
+            }
+            .time-muted {
+                color: #666;
+                font-size: 0.75rem;
+                display: inline-block;
+                margin-left: 0.25rem; /* Puts time right next to date horizontally on grid */
+            }
+        }
+
     </style>
 </head>
 <body>

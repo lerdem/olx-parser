@@ -1,37 +1,41 @@
 {% for ad in ads %}
 <tr id="row-{{ ad.id }}">
-    <td>{{ loop.index }}</td>
-    <td>{{ ad.tag }}</td>
-    <!-- include td -->
+    <td data-label="№">{{ loop.index }}</td>
+    <td data-label="Tag">{{ ad.tag }}</td>
+
     {% include 'partials/title_cell.html' %}
-    <td>
-        <div>{{ ad.parse_date | get_date }}</div>
-        <small style="color: #666; font-size: 0.8rem;">
-            {{ ad.parse_date | get_time }}
-        </small>
+    <td data-label="Когда узнали">
+        <div class="date-container">
+            <div>{{ ad.parse_date | get_date }}</div>
+            <small class="time-muted">
+                {{ ad.parse_date | get_time }}
+            </small>
+        </div>
     </td>
-    <td>
-        <div>{{ ad.publication_date | get_date }}</div>
-        <small style="color: #666; font-size: 0.8rem;">
-            {{ ad.publication_date | get_time }}
-        </small>
+    <td data-label="Дата Публикации">
+        <div class="date-container">
+            <div>{{ ad.publication_date | get_date }}</div>
+            <small class="time-muted">
+                {{ ad.publication_date | get_time }}
+            </small>
+        </div>
     </td>
-    <td>
+    <td data-label="Активно">
         <div class="ad-status">
             {% if ad.is_active %}
                 <span class="badge active" style="color: green;">●</span>
             {% else %}
-                <span class="badge inactive" style="color: red;">○</span>
+                <span class="badge inactive" style="color: red;">✖</span>
             {% endif %}
         </div>
     </td>
 
-    <td>
-        <a href="{{ ad.url }}">ссылка</a>
+    <td data-label="Ссылка">
+        <a href="{{ ad.url }}" target="_blank" rel="noopener noreferrer">ссылка</a>
     </td>
 </tr>
 {% else %}
-<tr>
+<tr class="empty-row">
     <td colspan="7" style="text-align: center">
         No objects found.
     </td>
