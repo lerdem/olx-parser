@@ -32,7 +32,7 @@ class CreateAdsUseCase:
                 f'Ошибка при получении "raw" данных: {e}.\nFor debug url={url}, tag={tag}'
             )
         saved = self._repository.get_all()
-        existed_urls = [ad.url for ad in saved]
+        existed_url_paths = [ad.path for ad in saved]
         provider_ads = [
             BaseAd(
                 id=uuid.uuid4().hex,
@@ -44,6 +44,11 @@ class CreateAdsUseCase:
             )
             for item in raw
         ]
-        new = [ad for ad in provider_ads if ad.url not in existed_urls]
+        provider_ads = self._exclude_dublicated_path(provider_ads)
+        new = [ad for ad in provider_ads if ad.path not in existed_url_paths]
         self._repository.save(new)
         return [i.id for i in new]
+
+    def _exclude_dublicated_path(self, ads: List[BaseAd]) -> List[BaseAd]:
+        _d_map = {ad.path: ad for ad in ads}
+        return list(_d_map.values())

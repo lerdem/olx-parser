@@ -11,7 +11,9 @@ class BaseAd(BaseModel):
     url: HttpUrl
     is_active: bool
 # TODO is_active False create new BaseAd
-
+    @property
+    def path(self):
+        return self.url.path
 
 class _DetailAd(BaseModel):
     description: str
@@ -22,7 +24,6 @@ class _DetailAd(BaseModel):
     publication_date: datetime
     view_cout: int
     phone: Optional[str] = None
-
 
 class DetailedAd(_DetailAd, BaseAd):
     pass
