@@ -1,6 +1,6 @@
 import sys
 
-from time import sleep
+from time import sleep, time
 from random import randint
 from ad.implementations import bulk_ads_deactivation
 from ad.logger import logger
@@ -9,11 +9,7 @@ from ad.logger import logger
 def _deactivate_job():
     logger.debug('DEACTIVATOR: started')
     while True:
-        time_to_wait = randint(180, 240)
-        logger.debug(
-            f'DEACTIVATOR: waiting {time_to_wait} seconds before check ads status'
-        )
-        sleep(time_to_wait)
+        started = time()
         try:
             res = bulk_ads_deactivation()
         except Exception as e:
@@ -21,6 +17,13 @@ def _deactivate_job():
         else:
             logger.debug(f'DEACTIVATOR: {res}')
         logger.debug(f'DEACTIVATOR: circle done')
+        duration = time() - started
+        logger.debug(f'DEACTIVATOR: duration {duration}')
+        time_to_wait = randint(5, 10)
+        logger.debug(
+            f'DEACTIVATOR: waiting {time_to_wait} seconds before check ads status'
+        )
+        sleep(time_to_wait)
 
 
 if __name__ == '__main__':

@@ -3,4 +3,5 @@ deal
 hypothesis
 types-punq
 types-dateparser
+types-ratelimit
 mypy

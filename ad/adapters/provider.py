@@ -1,5 +1,7 @@
 import os
 import pickle
+import time
+import random
 from contextlib import contextmanager
 from os.path import join, exists
 from pathlib import Path
@@ -12,6 +14,7 @@ from lxml import etree
 import lxml.etree as ET
 from requests import Session, HTTPError, ConnectionError
 from requests.exceptions import ChunkedEncodingError
+from ratelimit import limits, sleep_and_retry
 
 from ad.core.adapters.provider import (
     CreateAdsProvider,
@@ -243,7 +246,10 @@ class DetailedAdProviderOlx(DetailedAdProvider):
 
 class AvalabilityProviderOlx(AvalabilityProvider):
 
+    @sleep_and_retry
+    @limits(calls=20, period=60)  # Ceiling: Max 20 requests per minute
     def is_available(self, external_url) -> bool:
+        time.sleep(random.uniform(0.5, 2.0)) # типо это не парсер
         try:
             _code = _get_olx_status_code(external_url)
         except AdapterError:
