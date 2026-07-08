@@ -1,10 +1,9 @@
 import uuid
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from operator import add
 from typing import List
 from functools import reduce
-import pytz
 
 from ad.core.adapters.provider import CreateAdsProvider
 from ad.core.adapters.repository import CreateAdsRepo, CreateAdsConfig
@@ -39,7 +38,7 @@ class CreateAdsUseCase:
                 id=uuid.uuid4().hex,
                 tag=tag,
                 title=f'{item[0]} - {item[1]}',
-                parse_date=datetime.now(pytz.utc),
+                parse_date=datetime.now(timezone.utc),
                 url=item[2],
                 is_active=True
             )

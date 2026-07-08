@@ -3,7 +3,6 @@ pydantic==1.8.2
 lxml==4.6.5
 requests==2.26.0
 rfeed==1.1.1
-pytz==2026.2
 gunicorn==26.0.0
 punq==0.8.0
 sqlitedict==2.1.0

@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from os.path import join, exists
 from pathlib import Path
 from typing import List, Tuple, Dict, Type, Iterator, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
 import dateparser
@@ -207,7 +207,7 @@ class _BaseAdProviderOlx(DetailedAdProvider):
         when: datetime | None = dateparser.parse(raw_date, languages=['uk'], settings=settings)
         if when is None:
             raise AdapterError('Не удалось распарсить дату публикации')
-        return when.astimezone(ZoneInfo("UTC"))
+        return when.astimezone(timezone.utc)
 
     def get_view_count(self, dom) -> int:
         return 0
