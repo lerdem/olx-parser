@@ -10,6 +10,7 @@ sqlitedict==2.1.0
 dateparser==1.4.1
 python-telegram-bot==13.15
 premailer==3.10.0
+tzdata
 
 # to fix flask dependency
 # https://stackoverflow.com/questions/77213053/why-did-flask-start-failing-with-importerror-cannot-import-name-url-quote-fr
