@@ -143,6 +143,9 @@ def _get_provider_klass(url, mapper) -> Type:
 
 
 class CreateProviderOlx(CreateAdsProvider):
+
+    @sleep_and_retry
+    @limits(calls=20, period=60)  # Ceiling: Max 20 requests per minute
     def get_raw(self, start_url) -> List[Tuple]:
         _provider_klass = _get_provider_klass(start_url, _mapper_base)
         return _provider_klass().get_raw(start_url)
@@ -236,6 +239,9 @@ _mapper_detail: Dict[str, Type[DetailedAdProvider]] = {
 
 
 class DetailedAdProviderOlx(DetailedAdProvider):
+
+    @sleep_and_retry
+    @limits(calls=20, period=60)  # Ceiling: Max 20 requests per minute
     def get_raw(self, external_url) -> Tuple[List, str, str, str, datetime, int]:
         _provider_klass = _get_provider_klass(external_url, _mapper_detail)
         return _provider_klass().get_raw(external_url)

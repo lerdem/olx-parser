@@ -1,5 +1,5 @@
 import sys
-from time import sleep
+from time import sleep, time
 from random import randint
 
 from ad.core.errors import UseCaseError
@@ -10,15 +10,12 @@ from ad.logger import logger
 def _upload_job():
     logger.debug('UPLOADER: started')
     while True:
-        time_to_wait = randint(30, 60)
-        logger.debug(
-            f'UPLOADER: waiting before upload from olx {time_to_wait} seconds'
-        )
-        sleep(time_to_wait)
+        started = time()
         try:
             new_ad_ids = ads_creator()
         except UseCaseError as e:
             logger.error(f'UPLOADER: {e}')
+            logger.debug(f'UPLOADER: duration {time() - started}')
         else:
             logger.debug(f'UPLOADER: Загружены ads {new_ad_ids}')
             for _id in new_ad_ids:
@@ -28,6 +25,12 @@ def _upload_job():
                     logger.error(
                         f'UPLOADER: Error with {_id}, {e}'
                     )
+        logger.debug(f'UPLOADER: duration {time() - started}')
+        time_to_wait = randint(5, 20)
+        logger.debug(
+            f'UPLOADER: waiting before upload from olx {time_to_wait} seconds'
+        )
+        sleep(time_to_wait)
 
 
 if __name__ == '__main__':
