@@ -84,7 +84,7 @@ def _get_detail(ad: DetailedAd) -> str:
 
 
 
-def format_for_ui(utc_dt: datetime) -> datetime:
+def convert_to_kyiv(utc_dt: datetime) -> datetime:
     """Converts a UTC datetime object into a human-readable string
     localized to Europe/Kyiv time."""
     # 2. Convert the UTC datetime to Kyiv timezone
@@ -95,12 +95,12 @@ def format_for_ui(utc_dt: datetime) -> datetime:
     return kyiv_dt
 
 
-def get_date(d: datetime):
-    return format_for_ui(d).strftime("%d.%m.%y")
+def get_date(d: datetime) -> str:
+    return convert_to_kyiv(d).strftime("%d.%m.%y")
 
 
-def get_time(d: datetime):
-    return format_for_ui(d).strftime("%H:%M")
+def get_time(d: datetime) -> str:
+    return convert_to_kyiv(d).strftime("%H:%M")
 
 
 def _get_table(ads: List[DetailedAd]) -> str:
