@@ -208,6 +208,10 @@ class _BaseAdProviderOlx(DetailedAdProvider):
         # text returns ['Опубліковано ', 'сьогодні о 08:56']
         raw_date: str = raw.xpath('text()')[-1]
         when: datetime | None = dateparser.parse(raw_date, languages=['uk'], settings=settings)
+        from ad.logger import logger
+        logger.debug(
+            f'get_publication_date: {raw_date}, {when} {when.astimezone(timezone.utc)}'
+        )
         if when is None:
             raise AdapterError('Не удалось распарсить дату публикации')
         return when.astimezone(timezone.utc)
