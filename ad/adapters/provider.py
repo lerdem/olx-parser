@@ -195,26 +195,19 @@ class _BaseAdProviderOlx(DetailedAdProvider):
         return card.xpath('.//h4/text()')[0]
 
     def get_publication_date(self, dom) -> datetime:
-        # parse_uk_date_to_utc
-        ukraine_tz = ZoneInfo("Europe/Kyiv")
-        now_in_ukraine = datetime.now(ukraine_tz)
+        # OLX render utc time and with some JS converts to KIEV time
+        now = datetime.now(timezone.utc)
         settings = {
-            'RELATIVE_BASE': now_in_ukraine.replace(tzinfo=None), # Base relative calculations on UA time
-            'TIMEZONE': 'Europe/Kyiv',                            # Interpret the parsed string in UA timezone
-            'TO_TIMEZONE': 'Europe/Kyiv',                         # Ensure the output retains UA timezone
+            'RELATIVE_BASE': now,
             'RETURN_AS_TIMEZONE_AWARE': True
         }
         raw: Any = dom.xpath('.//span[contains(@data-cy, "ad-posted-at")]')[0]
         # text returns ['Опубліковано ', 'сьогодні о 08:56']
         raw_date: str = raw.xpath('text()')[-1]
         when: datetime | None = dateparser.parse(raw_date, languages=['uk'], settings=settings)
-        from ad.logger import logger
-        logger.debug(
-            f'get_publication_date: {raw_date}, {when} {when.astimezone(timezone.utc)}'
-        )
         if when is None:
             raise AdapterError('Не удалось распарсить дату публикации')
-        return when.astimezone(timezone.utc)
+        return when
 
     def get_view_count(self, dom) -> int:
         return 0
