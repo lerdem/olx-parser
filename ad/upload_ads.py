@@ -26,7 +26,7 @@ def _upload_job():
                         f'UPLOADER: Error with {_id}, {e}'
                     )
         logger.debug(f'UPLOADER: duration {time() - started}')
-        time_to_wait = randint(5, 20)
+        time_to_wait = randint(60, 120)
         logger.debug(
             f'UPLOADER: waiting before upload from olx {time_to_wait} seconds'
         )
