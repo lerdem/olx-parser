@@ -68,6 +68,6 @@ class CreateBaseAdsAndNotificateUC:
         # get from base repo ad url
         # simple send len ads find. Link to UI
         if ads_ids:
-            msg = f'Добавлено {len(ads_ids)} объявление(я)'
+            msg = f'Добавлено {len(ads_ids)} объявление(й)'
             self._sender.send_message(msg)
         return ads_ids
