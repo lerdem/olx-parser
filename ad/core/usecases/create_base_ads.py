@@ -36,7 +36,7 @@ class CreateAdsUseCase:
                 f'Ошибка при получении "raw" данных: {e}.\nFor debug url={url}, tag={tag}'
             )
         saved = self._repository.get_all()
-        existed_url_paths = [ad.path for ad in saved]
+        existed_url_paths = {ad.path for ad in saved}
         provider_ads = [
             BaseAd(
                 id=uuid.uuid4().hex,
