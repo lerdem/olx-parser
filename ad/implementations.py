@@ -16,6 +16,7 @@ from ad.adapters.repository import (
     CreateAdsConfigJson,
     GetDebugRepo,
     GetTableDebugRepo,
+    NTFYPusher,
 )
 from ad.core.adapters import Presenter
 from ad.core.adapters.provider import (
@@ -28,8 +29,12 @@ from ad.core.adapters.repository import (
     CreateAdsConfig,
     DetailedAdRepo,
     GetDetailedAdRepo,
+    Sender,
 )
-from ad.core.usecases.create_base_ads import CreateAdsUseCase
+from ad.core.usecases.create_base_ads import (
+    CreateAdsUseCase,
+    CreateBaseAdsAndNotificateUC,
+)
 from ad.core.usecases.create_detail_ad import (
     CreateDetailedAdUseCase,
     UploadDetailedAdsUseCase,
@@ -52,6 +57,7 @@ else:
 container.register(CreateAdsRepo, CreateAdsRepoSqlite)
 container.register(DetailedAdRepo, DetailedAdRepoSqlite)
 container.register(CreateAdsConfig, CreateAdsConfigJson)
+container.register(Sender, NTFYPusher)
 
 #PROVIDERS
 container.register(CreateAdsProvider, CreateProviderOlx)
@@ -67,6 +73,9 @@ _dashboard_presenter = container.resolve(DetailedAdDashboardPresenter)
 
 container.register(CreateAdsUseCase)
 ads_creator = container.resolve(CreateAdsUseCase)
+
+container.register(CreateBaseAdsAndNotificateUC)
+create_ads_and_notify = container.resolve(CreateBaseAdsAndNotificateUC)
 
 container.register(CreateDetailedAdUseCase)
 ad_detail_uploader = container.resolve(CreateDetailedAdUseCase)

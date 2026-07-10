@@ -4,6 +4,8 @@ import os
 from itertools import chain
 from functools import partial
 from typing import Dict, List
+from requests import Session, HTTPError, ConnectionError
+from requests.exceptions import ChunkedEncodingError
 from telegram import Bot
 from telegram.error import InvalidToken
 from sqlitedict import SqliteDict # type: ignore [import-untyped]
@@ -173,3 +175,32 @@ class TelegramSender(Sender):
             return config.getint('secrets', 'CHAT_ID')
         except ValueError:
             raise AdapterError('телеграм CHAT_ID должен состоять из цифр')
+
+
+class NTFYPusher(Sender):
+    def __init__(self):
+        self.ntfy_full_url = self._get_url()
+
+    def send_message(self, msg: str) -> None:
+        s = Session()
+        try:
+            r = s.post(
+                self.ntfy_full_url, data=msg.encode(encoding='utf-8')
+            )
+        except ConnectionError as e:
+            raise AdapterError(f'{e}, проблемы с подключение к интернету')
+        except ChunkedEncodingError as e:
+            raise AdapterError(f'{e}, невозможно прочитать ответ от ntfy')
+
+        try:
+            r.raise_for_status()
+        except HTTPError as e:
+            raise AdapterError(f'{e}, на этапе запроса к ntfy')
+
+    @staticmethod
+    def _get_url():
+        config = get_config()
+        try:
+            return config.get('ntfy', 'URL')
+        except configparser.NoOptionError:
+            raise AdapterError('No push url')

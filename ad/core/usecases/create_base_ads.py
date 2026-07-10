@@ -6,7 +6,11 @@ from typing import List
 from functools import reduce
 
 from ad.core.adapters.provider import CreateAdsProvider
-from ad.core.adapters.repository import CreateAdsRepo, CreateAdsConfig
+from ad.core.adapters.repository import (
+    CreateAdsRepo,
+    CreateAdsConfig,
+    Sender,
+)
 from ad.core.entities import BaseAd
 from ad.core.errors import AdapterError, UseCaseError
 
@@ -52,3 +56,18 @@ class CreateAdsUseCase:
     def _exclude_dublicated_path(self, ads: List[BaseAd]) -> List[BaseAd]:
         _d_map = {ad.path: ad for ad in ads}
         return list(_d_map.values())
+
+
+@dataclass
+class CreateBaseAdsAndNotificateUC:
+    _ads_creator: CreateAdsUseCase
+    _sender: Sender
+
+    def __call__(self) -> List[str]:
+        ads_ids = self._ads_creator()
+        # get from base repo ad url
+        # simple send len ads find. Link to UI
+        if ads_ids:
+            msg = f'Добавлено {len(ads_ids)} объявление(я)'
+            self._sender.send_message(msg)
+        return ads_ids
