@@ -62,7 +62,7 @@ class _CreateProviderOlx1(CreateAdsProvider):
 
     @staticmethod
     def _process_item(item: Any) -> Tuple[str, str, str]:
-        title = item.xpath('.//div[contains(@data-cy, "ad-card-title")]//h4/text()')[0]
+        title = item.xpath('.//div[contains(@data-testid, "ad-card-title")]//h4/text()')[0]
         default_link = 'https://www.olx.ua'
         link = default_link + item.xpath('.//a/@href')[0]
         dirty_price = item.xpath('.//p[@data-testid="ad-price"]/text()')[0]  # '6 000 грн.'
@@ -82,9 +82,10 @@ class _CreateProviderOlx1(CreateAdsProvider):
     def _restore():
         with open('item.pkl', 'rb') as f:
             item = ET.fromstring(pickle.load(f))
-            import ipdb # type: ignore
 
-            ipdb.set_trace()
+        import ipdb # type: ignore
+        ipdb.set_trace()
+
 
 
 class _CreateProviderOlx2(CreateAdsProvider):
