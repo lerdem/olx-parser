@@ -268,30 +268,31 @@ _BASE_DIR = Path(__file__).resolve(strict=True).parent
 
 @contextmanager
 def get_session() -> Iterator[Session]:
-    _path = join(_BASE_DIR, 'session.pickle')
-    _tmp_path = join(_BASE_DIR, 'session.pickle.tmp')
+    # Ensure the target directory exists right away
+    _dir = join(_BASE_DIR, 'ad', 'adapters')
+    os.makedirs(_dir, exist_ok=True)
 
-    # 1. Safe Load: Check if exists AND has data
-    if os.path.exists(_path) and os.path.getsize(_path) > 0:
+    _path = join(_dir, 'session.pickle')
+    _tmp_path = join(_dir, 'session.pickle.tmp')
+
+    # Safe Load
+    if exists(_path) and os.path.getsize(_path) > 0:
         try:
             with open(_path, 'rb') as f:
                 s = pickle.load(f)
         except Exception:
-            # If the file is corrupted anyway, fall back to a fresh session
             s = Session()
     else:
         s = Session()
-
     try:
         yield s
     finally:
-        # 2. Safe Write: Write to a temporary file first
+        # Safe Write
         with open(_tmp_path, 'wb') as f:
             pickle.dump(s, f)
-
-        # 3. Atomic Swap: Instantly replaces the old file. 
-        # Background processes will see either the old full file or the new full file, NEVER a 0-byte file.
-        os.replace(_tmp_path, _path)
+        # Atomic Swap
+        if exists(_tmp_path):
+            os.replace(_tmp_path, _path)
 
 
 def _get_olx_search_html(url) -> str:  # or raises AdapterError
