@@ -62,12 +62,24 @@ class CreateAdsUseCase:
 class CreateBaseAdsAndNotificateUC:
     _ads_creator: CreateAdsUseCase
     _sender: Sender
+    _repository: CreateAdsRepo
 
     def __call__(self) -> List[str]:
         ads_ids = self._ads_creator()
-        # get from base repo ad url
-        # simple send len ads find. Link to UI
+
         if ads_ids:
-            msg = f'Добавлено {len(ads_ids)} объявление(й)'
+            target_ids = set(ads_ids)
+            new_ads = [
+                ad for ad in self._repository.get_all() if ad.id in target_ids
+            ]
+            msg = self._make_message(new_ads)
             self._sender.send_message(msg)
+
         return ads_ids
+
+    def _make_message(self, ads: List[BaseAd]) -> str:
+        lines = [f"+{len(ads)}"]
+        for ad in ads:
+            tag_prefix = f"[{ad.tag.upper()}] "
+            lines.append(f"• {tag_prefix}{ad.title}")
+        return "\n".join(lines)
