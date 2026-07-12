@@ -215,6 +215,6 @@ class NTFYPusher(Sender):
     def _get_dashboad_url():
         config = get_config()
         try:
-            return config.get('ntfy', 'URL')
+            return config.get('ntfy', 'DASHBOARD_URL')
         except configparser.NoOptionError:
             raise AdapterError('No dashbord url')
