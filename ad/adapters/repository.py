@@ -179,13 +179,19 @@ class TelegramSender(Sender):
 
 class NTFYPusher(Sender):
     def __init__(self):
-        self.ntfy_full_url = self._get_url()
+        self.ntfy_full_url = self._get_ntfy_url()
+        self.dashbord_url = self._get_dashboad_url()
 
     def send_message(self, msg: str) -> None:
         s = Session()
         try:
             r = s.post(
-                self.ntfy_full_url, data=msg.encode(encoding='utf-8')
+                self.ntfy_full_url,
+                data=msg.encode(encoding='utf-8'),
+                headers={
+                    "Click": self.dashbord_url,
+                    "Tags": "house",
+                },
             )
         except ConnectionError as e:
             raise AdapterError(f'{e}, проблемы с подключение к интернету')
@@ -198,9 +204,17 @@ class NTFYPusher(Sender):
             raise AdapterError(f'{e}, на этапе запроса к ntfy')
 
     @staticmethod
-    def _get_url():
+    def _get_ntfy_url():
         config = get_config()
         try:
             return config.get('ntfy', 'URL')
         except configparser.NoOptionError:
             raise AdapterError('No push url')
+
+    @staticmethod
+    def _get_dashboad_url():
+        config = get_config()
+        try:
+            return config.get('ntfy', 'URL')
+        except configparser.NoOptionError:
+            raise AdapterError('No dashbord url')
