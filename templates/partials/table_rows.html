@@ -33,10 +33,17 @@
     <td data-label="Ссылка">
         <a href="{{ ad.url }}" target="_blank" rel="noopener noreferrer">ссылка</a>
     </td>
+    <td data-label="Фото">
+        <div class="image_view">
+            <a data-fslightbox="gallery" href="{{ ad.image_urls[0] }}">
+                <img src="{{ ad.image_urls[0] }}" loading="lazy">
+            </a>
+        </div>
+    </td>
 </tr>
 {% else %}
 <tr class="empty-row">
-    <td colspan="7" style="text-align: center">
+    <td colspan="8" style="text-align: center">
         No objects found.
     </td>
 </tr>

@@ -36,6 +36,15 @@
             padding: 4px 8px !important;
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
+        .image_view {
+            display: block;
+            margin: auto;
+            width: 200px;
+            height: auto;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
 
         @media screen and (max-width: 768px) {
             /* Hide the traditional table header */
@@ -143,6 +152,7 @@
     <script src="https://unpkg.com/htmx.org@2.0.0" 
         integrity="sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw" 
         crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.js"></script>
 
   <!--   <script>
         document.body.addEventListener('htmx:configRequest', (event) => {
