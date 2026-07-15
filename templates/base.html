@@ -154,6 +154,15 @@
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.js"></script>
 
+    <script>
+        // Tell fslightbox to initialize any new image rows loaded by HTMX
+        document.body.addEventListener('htmx:afterSettle', () => {
+            if (typeof refreshFsLightbox === 'function') {
+                refreshFsLightbox();
+            }
+        });
+    </script>
+
   <!--   <script>
         document.body.addEventListener('htmx:configRequest', (event) => {
             // If using Flask-WTF / CSRF protection, inject token here
