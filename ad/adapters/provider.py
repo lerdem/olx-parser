@@ -87,7 +87,6 @@ class _CreateProviderOlx1(CreateAdsProvider):
         ipdb.set_trace()
 
 
-
 class _CreateProviderOlx2(CreateAdsProvider):
     _example_url = 'https://www.olx.ua/elektronika/telefony-i-aksesuary/mobilnye-telefony-smartfony/dnepr/q-pixel-4/'
 
@@ -124,15 +123,67 @@ class _CreateProviderOlx3(_CreateProviderOlx2):
         return title, dirty_price, link
 
 
+class _CreateProviderEH(CreateAdsProvider):
+    _example_url = 'https://easyhata.ua/5097?business_type=rent&type=flat&city=3&district=6&sortable=-created_at'
+
+    @log_function_call
+    def get_raw(self, start_url) -> List[Tuple]:
+        html = _get_olx_search_html(start_url)
+        dom: Any = etree.HTML(html)
+        results = dom.xpath('.//ul[contains(@class, "listings__grid")]/li')
+
+        return [
+            self._wraped_process_item(item)
+            for item in results
+        ]
+
+    @staticmethod
+    def _process_item(item: Any) -> Tuple[str, str, str]:
+        title = item.xpath('.//h3/text()')[0]
+        dirty_price = item.xpath('.//span[@class="object-card-media__price"]/text()')[0]  # '\n        10000 UAH\n      '
+        dirty_price = ''.join([i for i in dirty_price if i.isdigit()])
+        try:
+            dirty_flat_id = item.xpath('.//div[contains(@class, "swiper-button-prev")]/@class')[0] # ['swiper-button-prev object-card-media__nav object-card-media__nav--prev object-card-media__nav--prev-501834']
+            dirty_flat_id = ''.join([i for i in dirty_flat_id if i.isdigit()])
+        except IndexError as e:
+            print(e, title)
+            url = item.xpath('.//figure[contains(@class, "object-card-media")]/img/@src')[0]
+            dirty_flat_id = url.split('realty/')[-1].split('/зображення')[0]
+        link = f'https://easyhata.ua/flats/{dirty_flat_id}/rieltor/5097' # hardcode rieltorid 5097
+        return title, dirty_price, link
+
+    def _wraped_process_item(self, item: Any) -> Tuple[str, str, str]:
+        try:
+            data = self._process_item(item)
+        except Exception as e:
+            with open('item_2.pkl', 'wb') as f:
+                pickle.dump(ET.tostring(item), f)
+            raise
+        else:
+            return data
+
+    @staticmethod
+    def _restore():
+        with open('item.pkl', 'rb') as f:
+            item = ET.fromstring(pickle.load(f))
+
+        import ipdb # type: ignore
+        ipdb.set_trace()
+
+
+
+
 _SPECIAL = '/nedvizhimost/'  # apartment ads
 _REGULAR = 'regular'
 _RABOTA = '/rabota/'
+_EASY_HATA = 'easyhata'
 
 
 _mapper_base: Dict[str, Type[CreateAdsProvider]] = {
     _SPECIAL: _CreateProviderOlx1,
     _RABOTA: _CreateProviderOlx3,
     _REGULAR: _CreateProviderOlx2,
+    _EASY_HATA: _CreateProviderEH,
 }
 
 
@@ -233,9 +284,47 @@ class _DetailedAdRabotaProviderOlx(_BaseAdProviderOlx):
         return dom.xpath('.//h2/text()')[-1]
 
 
+
+class _DetailedAdProviderEH(DetailedAdProvider):
+    def get_raw(self, external_url) -> Tuple[List, str, str, str, datetime, int]:
+        html = _get_olx_search_html(external_url)
+        dom: Any = etree.HTML(html)
+        return (
+            self.get_images(dom),
+            self.get_ad_id(dom),
+            self.get_description(dom),
+            self.get_name(dom),
+            self.get_publication_date(dom),
+            self.get_view_count(dom),
+        )
+
+    def get_images(self, dom) -> List:
+        return dom.xpath('.//div[contains(@class, "image-carousel__thumb-img")]/img/@src')
+
+    def get_ad_id(self, dom) -> str:  # or raises AdapterError
+        ad_id = dom.xpath('.//div[@class="rid__id"]/text()')[0].split('id: ')[-1]
+        try:
+            return str(int(ad_id))
+        except ValueError:
+            raise AdapterError('Не удалось распарсить id обьявления')
+
+    def get_description(self, dom) -> str:
+        return dom.xpath('.//div[@class="rid__description"]/p/text()')[0]
+
+    def get_name(self, dom) -> str:
+        return 'easyhata'
+
+    def get_publication_date(self, dom) -> datetime:
+        return datetime.now(timezone.utc)
+
+    def get_view_count(self, dom) -> int:
+        return 0
+
+
 _mapper_detail: Dict[str, Type[DetailedAdProvider]] = {
     _RABOTA: _DetailedAdRabotaProviderOlx,
     _REGULAR: _BaseAdProviderOlx,
+    _EASY_HATA: _DetailedAdProviderEH,
 }
 
 
@@ -248,12 +337,9 @@ class DetailedAdProviderOlx(DetailedAdProvider):
         return _provider_klass().get_raw(external_url)
 
 
-class AvalabilityProviderOlx(AvalabilityProvider):
+class _AvalabilityProviderOlx(AvalabilityProvider):
 
-    @sleep_and_retry
-    @limits(calls=20, period=60)  # Ceiling: Max 20 requests per minute
     def is_available(self, external_url) -> bool:
-        time.sleep(random.uniform(0.5, 2.0)) # типо это не парсер
         try:
             _code = _get_olx_status_code(external_url)
         except AdapterError:
@@ -261,6 +347,34 @@ class AvalabilityProviderOlx(AvalabilityProvider):
         if _code in (404, 410): # means OLX deactivate ad
             return False
         return True
+
+
+class _AvalabilityProviderEH(AvalabilityProvider):
+
+    def is_available(self, external_url) -> bool:
+        html = _get_olx_search_html(external_url)
+        dom: Any = etree.HTML(html)
+
+        not_available = 'Здано' in dom.xpath('.//span[@class="app-button__inner"]/span/text()')[0]
+
+        if not_available:
+            return False
+        return True
+
+_mapper_avalability: Dict[str, Type[AvalabilityProvider]] = {
+    _EASY_HATA: _AvalabilityProviderEH,
+    'olx': _AvalabilityProviderOlx
+}
+
+
+class AvalabilityProviderAny(AvalabilityProvider):
+
+    @sleep_and_retry
+    @limits(calls=20, period=60)  # Ceiling: Max 20 requests per minute
+    def is_available(self, external_url) -> bool:
+        _provider_klass = _get_provider_klass(external_url, _mapper_avalability)
+        time.sleep(random.uniform(0.5, 2.0)) # типо это не парсер
+        return _provider_klass().is_available(external_url)
 
 
 _BASE_DIR = Path(__file__).resolve(strict=True).parent
@@ -352,5 +466,15 @@ if __name__ == '__main__':
     # print(res)
     # docker exec -it olx-server python -m ad.adapters.provider
     # _CreateProviderOlx1._restore()
-    external_url = 'https://www.olx.ua/d/uk/obyavlenie/zdam-odnokmnatnu-kvartiru-vul-lipinskogo-ID10NOXp.html?search_reason=search%7Corganic'
-    res = AvalabilityProviderOlx().is_available(external_url)
+    # external_url = 'https://www.olx.ua/d/uk/obyavlenie/zdam-odnokmnatnu-kvartiru-vul-lipinskogo-ID10NOXp.html?search_reason=search%7Corganic'
+    # res = AvalabilityProviderOlx().is_available(external_url)
+    # url = _CreateProviderEH._example_url
+    # res = CreateProviderOlx().get_raw(url)
+    # det_url = 'https://easyhata.ua/flats/773300/rieltor/5097'
+    # res = DetailedAdProviderOlx().get_raw(det_url)
+    # url = 'https://easyhata.ua/flats/501834/rieltor/5097'
+    # res= AvalabilityProviderAny().is_available(url)
+    # print(res)
+    # url = 'https://easyhata.ua/flats/773300/rieltor/5097'
+    # res= AvalabilityProviderAny().is_available(url)
+    # print(res)

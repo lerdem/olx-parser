@@ -8,7 +8,7 @@ from ad.adapters.presenter import (
 from ad.adapters.provider import (
     DetailedAdProviderOlx,
     CreateProviderOlx,
-    AvalabilityProviderOlx,
+    AvalabilityProviderAny,
 )
 from ad.adapters.repository import (
     DetailedAdRepoSqlite,
@@ -62,7 +62,7 @@ container.register(Sender, NTFYPusher)
 #PROVIDERS
 container.register(CreateAdsProvider, CreateProviderOlx)
 container.register(DetailedAdProvider, DetailedAdProviderOlx)
-container.register(AvalabilityProvider, AvalabilityProviderOlx)
+container.register(AvalabilityProvider, AvalabilityProviderAny)
 
 # #PRESENTERS
 container.register(DetailedAdFeedPresenter)
