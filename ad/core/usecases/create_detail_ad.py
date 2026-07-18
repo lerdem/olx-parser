@@ -46,7 +46,10 @@ class UploadDetailedAdsUseCase:
         if not need_to_update:
             return 'Нет объявлений для загрузки'
         for _id in need_to_update:
-            self._create_detail_uc(_id)
+            try:
+                self._create_detail_uc(_id)
+            except AdapterError:
+                print(f'SKIP: {_id}') # in case of 404/410
         return f'Загружено {len(need_to_update)} DetailedAd'
 
 
