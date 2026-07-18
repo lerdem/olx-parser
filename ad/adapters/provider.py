@@ -290,6 +290,8 @@ class _DetailedAdRabotaProviderOlx(_BaseAdProviderOlx):
 
 
 class _DetailedAdProviderEH(DetailedAdProvider):
+
+    @log_function_call
     def get_raw(self, external_url) -> Tuple[List, str, str, str, datetime, int]:
         html = _get_olx_search_html(external_url)
         dom: Any = etree.HTML(html)
@@ -313,7 +315,8 @@ class _DetailedAdProviderEH(DetailedAdProvider):
             raise AdapterError('Не удалось распарсить id обьявления')
 
     def get_description(self, dom) -> str:
-        return dom.xpath('.//div[@class="rid__description"]/p/text()')[0]
+        description_parts = dom.xpath('.//div[@class="rid__description"]//text()')
+        return ' '.join(description_parts)
 
     def get_name(self, dom) -> str:
         return 'easyhata'
