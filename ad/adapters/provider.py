@@ -2,6 +2,7 @@ import os
 import pickle
 import time
 import random
+import re
 from contextlib import contextmanager
 from os.path import join, exists
 from pathlib import Path
@@ -12,6 +13,7 @@ from zoneinfo import ZoneInfo
 import dateparser
 from lxml import etree
 import lxml.etree as ET
+import chompjs
 from requests import Session, HTTPError, ConnectionError
 from requests.exceptions import ChunkedEncodingError
 from ratelimit import limits, sleep_and_retry
@@ -124,13 +126,21 @@ class _CreateProviderOlx3(_CreateProviderOlx2):
 
 
 class _CreateProviderEH(CreateAdsProvider):
-    _example_url = 'https://easyhata.ua/5097?business_type=rent&type=flat&city=3&district=6&sortable=-created_at'
+    _example_url = 'https://easyhata.ua/5097?business_type=rent&type=flat&city=3&district=7&sortable=-created_at'
 
     @log_function_call
     def get_raw(self, start_url) -> List[Tuple]:
         html = _get_olx_search_html(start_url)
         dom: Any = etree.HTML(html)
-        results = dom.xpath('.//ul[contains(@class, "listings__grid")]/li')
+
+        script_tag = dom.xpath('//script[contains(text(), "realties")]')
+        if not script_tag:
+            raise AdapterError('нет scipt with realties')
+        match = re.search(re.escape('realties:') + r'\s*(\[.*)', script_tag[0].text, re.DOTALL)
+        if not match:
+            raise AdapterError('нет js массива realties')
+        raw_tail_string = match.group(1)
+        results = chompjs.parse_js_object(raw_tail_string)
 
         return [
             self._wraped_process_item(item)
@@ -139,17 +149,11 @@ class _CreateProviderEH(CreateAdsProvider):
 
     @staticmethod
     def _process_item(item: Any) -> Tuple[str, str, str]:
-        title = item.xpath('.//h3/text()')[0]
-        dirty_price = item.xpath('.//span[@class="object-card-media__price"]/text()')[0]  # '\n        10000 UAH\n      '
-        dirty_price = ''.join([i for i in dirty_price if i.isdigit()])
-        try:
-            dirty_flat_id = item.xpath('.//div[contains(@class, "swiper-button-prev")]/@class')[0] # ['swiper-button-prev object-card-media__nav object-card-media__nav--prev object-card-media__nav--prev-501834']
-            dirty_flat_id = ''.join([i for i in dirty_flat_id if i.isdigit()])
-        except IndexError as e:
-            print(e, title)
-            url = item.xpath('.//figure[contains(@class, "object-card-media")]/img/@src')[0]
-            dirty_flat_id = url.split('realty/')[-1].split('/зображення')[0]
-        link = f'https://easyhata.ua/flats/{dirty_flat_id}/rieltor/5097' # hardcode rieltorid 5097
+        fragment = etree.HTML(item['text'])
+        title = "\n".join([p.text for p in fragment.xpath('//p') if p.text])[:90]
+        dirty_price = item['price']
+        _id = item['id']
+        link = f'https://easyhata.ua/flats/{_id}/rieltor/5097' # hardcode rieltorid 5097
         return title, dirty_price, link
 
     def _wraped_process_item(self, item: Any) -> Tuple[str, str, str]:
@@ -468,8 +472,8 @@ if __name__ == '__main__':
     # _CreateProviderOlx1._restore()
     # external_url = 'https://www.olx.ua/d/uk/obyavlenie/zdam-odnokmnatnu-kvartiru-vul-lipinskogo-ID10NOXp.html?search_reason=search%7Corganic'
     # res = AvalabilityProviderOlx().is_available(external_url)
-    # url = _CreateProviderEH._example_url
-    # res = CreateProviderOlx().get_raw(url)
+    url = _CreateProviderEH._example_url
+    res = CreateProviderOlx().get_raw(url)
     # det_url = 'https://easyhata.ua/flats/773300/rieltor/5097'
     # res = DetailedAdProviderOlx().get_raw(det_url)
     # url = 'https://easyhata.ua/flats/501834/rieltor/5097'
@@ -477,4 +481,5 @@ if __name__ == '__main__':
     # print(res)
     # url = 'https://easyhata.ua/flats/773300/rieltor/5097'
     # res= AvalabilityProviderAny().is_available(url)
-    # print(res)
+    print(res)
+    # _CreateProviderEH()._restore()

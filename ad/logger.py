@@ -24,6 +24,6 @@ def log_function_call(func):
             logger.info(f"Exiting function: {func_name} with return value: {result}")
             return result
         except Exception as e:
-            logger.error(f"Error in function: {func_name} - {e}")
+            logger.exception(f"Error in function: {func_name} - {e}")
             raise  # Re-raise the exception after logging
     return wrapper
