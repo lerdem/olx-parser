@@ -10,6 +10,7 @@ from ad.core.adapters.repository import (
     GetDetailedAdRepo
 )
 from ad.core.entities import DetailedAd, BaseAd
+from ad.core.errors import AdapterError
 
 
 @dataclass
