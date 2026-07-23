@@ -440,12 +440,14 @@ def _get_olx_search_html_base(url, session: Session) -> str:  # or raises Adapte
         raise AdapterError(f'{e}, проблемы с подключение к интернету')
     except ChunkedEncodingError as e:
         raise AdapterError(f'{e}, невозможно прочитать ответ от ОЛХ')
-
     try:
         r.raise_for_status()
-        return r.text
     except HTTPError as e:
         raise AdapterError(f'{e}, на этапе запроса к ОЛХ')
+    else:
+        if r.url == 'https://easyhata.ua/error/404':
+            raise AdapterError('easyhata 404')
+        return r.text
 
 
 def _get_olx_status_code(url) -> int:  # or raises AdapterError
