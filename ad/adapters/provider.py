@@ -308,7 +308,14 @@ class _DetailedAdProviderEH(DetailedAdProvider):
         return dom.xpath('.//div[contains(@class, "image-carousel__thumb-img")]/img/@src')
 
     def get_ad_id(self, dom) -> str:  # or raises AdapterError
-        ad_id = dom.xpath('.//div[@class="rid__id"]/text()')[0].split('id: ')[-1]
+        els = dom.xpath('.//div[contains(@class, "view__id")]')
+        if not len(els) == 1:
+            raise AdapterError('easyhata изменил место id объекта')
+        el = els[0]
+        try:
+            ad_id = el.xpath('.//text()')[1]
+        except IndexError:
+            raise AdapterError('easyhata изменил место id объекта 2')
         try:
             return str(int(ad_id))
         except ValueError:
