@@ -25,6 +25,7 @@ from ad.core.adapters.provider import (
 )
 from ad.core.errors import AdapterError
 from ad.logger import log_function_call
+from ad.adapters.utils import BASE_DIR
 
 
 class _CreateProviderOlx1(CreateAdsProvider):
@@ -391,13 +392,10 @@ class AvalabilityProviderAny(AvalabilityProvider):
         return _provider_klass().is_available(external_url)
 
 
-_BASE_DIR = Path(__file__).resolve(strict=True).parent
-
-
 @contextmanager
 def get_session() -> Iterator[Session]:
     # Ensure the target directory exists right away
-    _dir = join(_BASE_DIR, 'ad', 'adapters')
+    _dir = join(BASE_DIR, 'ad', 'adapters')
     os.makedirs(_dir, exist_ok=True)
 
     _path = join(_dir, 'session.pickle')
