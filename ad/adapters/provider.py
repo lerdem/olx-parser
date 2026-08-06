@@ -370,7 +370,7 @@ class _AvalabilityProviderEH(AvalabilityProvider):
         try:
             html = _get_olx_search_html(external_url)
         except AdapterError as e:
-            if 'easyhata 404' in e:
+            if 'easyhata 404' in str(e):
                 return False
             else:
                 raise
