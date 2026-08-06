@@ -367,7 +367,14 @@ class _AvalabilityProviderOlx(AvalabilityProvider):
 class _AvalabilityProviderEH(AvalabilityProvider):
 
     def is_available(self, external_url) -> bool:
-        html = _get_olx_search_html(external_url)
+        try:
+            html = _get_olx_search_html(external_url)
+        except AdapterError as e:
+            if 'easyhata 404' in e
+                return False
+            else:
+                raise
+
         dom: Any = etree.HTML(html)
 
         not_available = 'Здано' in dom.xpath('.//span[@class="app-button__inner"]/span/text()')[0]
