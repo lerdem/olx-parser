@@ -5,8 +5,6 @@ services:
     container_name: olx-server
     volumes:
       - .:/app
-    environment:
-      - REQUESTS_CA_BUNDLE=/usr/local/lib/python3.10/site-packages/certifi/cacert.pem
     command: /bin/sh entrypoint.sh
 
   proxy:

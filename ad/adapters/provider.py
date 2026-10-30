@@ -14,8 +14,8 @@ import dateparser
 from lxml import etree
 import lxml.etree as ET
 import chompjs
-from requests import Session, HTTPError, ConnectionError
-from requests.exceptions import ChunkedEncodingError
+from curl_cffi.requests.exceptions import ConnectionError, HTTPError, ChunkedEncodingError
+from curl_cffi.requests import Session
 from ratelimit import limits, sleep_and_retry
 
 from ad.core.adapters.provider import (
@@ -401,46 +401,16 @@ class AvalabilityProviderAny(AvalabilityProvider):
 
 @contextmanager
 def get_session() -> Iterator[Session]:
-    # Ensure the target directory exists right away
-    _dir = join(BASE_DIR, 'ad', 'adapters')
-    os.makedirs(_dir, exist_ok=True)
-
-    _path = join(_dir, 'session.pickle')
-    _tmp_path = join(_dir, 'session.pickle.tmp')
-
-    # Safe Load
-    if exists(_path) and os.path.getsize(_path) > 0:
-        try:
-            with open(_path, 'rb') as f:
-                s = pickle.load(f)
-        except Exception:
-            s = Session()
-    else:
-        s = Session()
-    try:
-        yield s
-    finally:
-        # Safe Write
-        with open(_tmp_path, 'wb') as f:
-            pickle.dump(s, f)
-        # Atomic Swap
-        if exists(_tmp_path):
-            os.replace(_tmp_path, _path)
-
+    yield Session(impersonate="chrome120")
 
 def _get_olx_search_html(url) -> str:  # or raises AdapterError
     with get_session() as session:
         return _get_olx_search_html_base(url, session)
 
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0',
-    'X-Client': 'DESKTOP',
-}
 
 def _get_olx_search_html_base(url, session: Session) -> str:  # or raises AdapterError
-    HEADERS['Referer'] = url
     try:
-        r = session.get(url, headers=HEADERS)
+        r = session.get(url)
     except ConnectionError as e:
         raise AdapterError(f'{e}, проблемы с подключение к интернету')
     except ChunkedEncodingError as e:
@@ -461,9 +431,8 @@ def _get_olx_status_code(url) -> int:  # or raises AdapterError
 
 
 def _get_olx_404_base(url, session: Session) -> int:  # or raises AdapterError
-    HEADERS['Referer'] = url
     try:
-        r = session.head(url, headers=HEADERS, timeout=5)
+        r = session.head(url, timeout=5)
     except ConnectionError as e:
         raise AdapterError(f'{e}, проблемы с подключение к интернету')
     except ChunkedEncodingError as e:
@@ -489,14 +458,10 @@ if __name__ == '__main__':
     # _CreateProviderOlx1._restore()
     # external_url = 'https://www.olx.ua/d/uk/obyavlenie/zdam-odnokmnatnu-kvartiru-vul-lipinskogo-ID10NOXp.html?search_reason=search%7Corganic'
     # res = AvalabilityProviderOlx().is_available(external_url)
-    url = _CreateProviderEH._example_url
-    res = CreateProviderOlx().get_raw(url)
-    # det_url = 'https://easyhata.ua/flats/773300/rieltor/5097'
+    # url = _CreateProviderEH._example_url
+    # res = CreateProviderOlx().get_raw(url)
+    # det_url = 'https://easyhata.ua/flats/832084/rieltor/5097'
     # res = DetailedAdProviderOlx().get_raw(det_url)
-    # url = 'https://easyhata.ua/flats/501834/rieltor/5097'
-    # res= AvalabilityProviderAny().is_available(url)
     # print(res)
-    # url = 'https://easyhata.ua/flats/773300/rieltor/5097'
-    # res= AvalabilityProviderAny().is_available(url)
-    print(res)
+    print(BASE_DIR)
     # _CreateProviderEH()._restore()

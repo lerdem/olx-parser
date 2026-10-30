@@ -4,8 +4,10 @@ import os
 from itertools import chain
 from functools import partial
 from typing import Dict, List
-from requests import Session, HTTPError, ConnectionError
-from requests.exceptions import ChunkedEncodingError
+
+from curl_cffi.requests.exceptions import ConnectionError, HTTPError, ChunkedEncodingError
+from curl_cffi.requests import Session
+
 from telegram import Bot
 from telegram.error import InvalidToken
 from sqlitedict import SqliteDict # type: ignore [import-untyped]
@@ -183,7 +185,7 @@ class NTFYPusher(Sender):
         self.dashbord_url = self._get_dashboad_url()
 
     def send_message(self, msg: str) -> None:
-        s = Session()
+        s = Session(impersonate="chrome120")
         try:
             r = s.post(
                 self.ntfy_full_url,
@@ -191,6 +193,7 @@ class NTFYPusher(Sender):
                 headers={
                     "Click": self.dashbord_url,
                     "Tags": "house",
+                    "Markdown": "yes",
                 },
             )
         except ConnectionError as e:

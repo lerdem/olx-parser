@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from requests import Session, HTTPError, ConnectionError
-from requests.exceptions import ChunkedEncodingError
+from curl_cffi.requests.exceptions import ConnectionError, HTTPError, ChunkedEncodingError
+from curl_cffi.requests import Session
 
 from ad.adapters.provider import _get_olx_search_html_base
 from ad.core.errors import AdapterError

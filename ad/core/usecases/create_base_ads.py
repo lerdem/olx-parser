@@ -81,5 +81,6 @@ class CreateBaseAdsAndNotificateUC:
         lines = [f"+{len(ads)}"]
         for ad in ads:
             tag_prefix = f"[{ad.tag.upper()}] "
-            lines.append(f"• {tag_prefix}{ad.title}")
+            md_url = f"[{ad.title}]({ad.url})"
+            lines.append(f"• {tag_prefix} {md_url}")
         return "\n".join(lines)
